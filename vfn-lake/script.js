@@ -21,14 +21,6 @@ const codeOutput = document.getElementById('code-output');
 const ZALO_PERSONAL_NUMBER = '0917656016';
 const ZALO_PERSONAL_URL = `https://zalo.me/${ZALO_PERSONAL_NUMBER}`;
 let journeyInitialized = false;
-const urlParams = new URLSearchParams(window.location.search);
-const shouldRestoreLayout = urlParams.get('edit') === '1';
-
-if (window.location.hash) {
-    history.replaceState(null, '', `${window.location.pathname}${window.location.search}`);
-}
-window.scrollTo(0, 0);
-window.addEventListener('beforeunload', () => window.scrollTo(0, 0));
 
 function setupNodeActionButtons() {
     const modalEl = document.getElementById('modalNodeAction');
@@ -112,25 +104,31 @@ function setupZaloChatWidget() {
 
 function waitForMediaElementLoad(el) {
     return new Promise((resolve) => {
+        const timeoutId = window.setTimeout(() => resolve(), 8000);
+        const done = () => {
+            window.clearTimeout(timeoutId);
+            resolve();
+        };
+
         if (!el) return resolve();
 
         if (el.tagName === 'IMG') {
-            if (el.complete && el.naturalWidth > 0) return resolve();
-            el.addEventListener('load', () => resolve(), { once: true });
-            el.addEventListener('error', () => resolve(), { once: true });
+            if (el.complete) return done();
+            el.addEventListener('load', done, { once: true });
+            el.addEventListener('error', done, { once: true });
             return;
         }
 
         if (el.tagName === 'AUDIO') {
-            if (el.readyState >= 2) return resolve();
-            el.addEventListener('canplaythrough', () => resolve(), { once: true });
-            el.addEventListener('loadeddata', () => resolve(), { once: true });
-            el.addEventListener('error', () => resolve(), { once: true });
+            if (el.readyState >= 2) return done();
+            el.addEventListener('canplaythrough', done, { once: true });
+            el.addEventListener('loadeddata', done, { once: true });
+            el.addEventListener('error', done, { once: true });
             el.load();
             return;
         }
 
-        resolve();
+        done();
     });
 }
 
@@ -435,11 +433,7 @@ function endAssetDrag(event) {
 document.addEventListener('pointerup', endAssetDrag);
 document.addEventListener('pointercancel', endAssetDrag);
 
-if (shouldRestoreLayout) {
-    restoreEditableAssets();
-} else {
-    updateCodeOutput();
-}
+restoreEditableAssets();
 setupZaloChatWidget();
 
 // ----------------------------------------
