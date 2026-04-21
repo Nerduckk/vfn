@@ -617,6 +617,10 @@ function resetIntroState() {
 
     if (typeof gsap !== 'undefined') {
         gsap.set('#world-canvas', { clearProps: 'transform' });
+        gsap.set(
+            '.underwater-veil, .horizon-group, .waterline-glow, .surface-content, .mound-wrap, .tall-plant-cluster, .p-far, .p-mid, .p-near, .stars-container, .underwater-cutout',
+            { clearProps: 'all' }
+        );
     }
 }
 
@@ -690,6 +694,10 @@ document.body.classList.add('no-scroll');
 // ----------------------------------------
 
 function initJourney() {
+    if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined' && typeof gsap.registerPlugin === 'function') {
+        gsap.registerPlugin(ScrollTrigger);
+    }
+
     if (typeof ScrollTrigger !== 'undefined') {
         ScrollTrigger.getAll().forEach(trigger => trigger.kill());
     }
@@ -882,6 +890,7 @@ function initJourney() {
                 gsap.to(".bg-gradient-fixed", { backgroundColor: "var(--bg-layer2)", duration: 1.5 });
                 gsap.to("#particle-container", { opacity: 0.5, duration: 1 });
             } else if (p > 0.3) {
+                gsap.set(".p-far, .p-mid, .p-near", { autoAlpha: 1 });
                 gsap.to(".bg-gradient-fixed", { backgroundColor: "var(--bg-layer1)", duration: 1.5 });
                 gsap.to("#particle-container", { opacity: 1, duration: 1 });
             } else {
@@ -890,6 +899,10 @@ function initJourney() {
             }
         }
     });
+
+    if (typeof ScrollTrigger !== 'undefined') {
+        ScrollTrigger.refresh();
+    }
 
     // Fish idle animation (Bơi lên xuống nhịp nhàng)
     gsap.utils.toArray('.fish-anim').forEach(fish => {
