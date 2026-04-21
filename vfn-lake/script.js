@@ -25,6 +25,8 @@ let journeyInitialized = false;
 let preloadRunId = 0;
 let autoEnterTimeoutId = null;
 let audioUnlockBound = false;
+const MEDIA_LOAD_TIMEOUT_MS = 12000;
+const AUTO_ENTER_DELAY_MS = 1200;
 
 function forceScrollTop() {
     window.scrollTo(0, 0);
@@ -80,26 +82,26 @@ function setupNodeActionButtons() {
     const modal = new bootstrap.Modal(modalEl);
     const contentMap = {
         'node-7': {
-            title: 'Node 7 - Tang Sau Nua',
-            body: 'Khu vuc nay mo ta he sinh thai dang chuyen tiep. Ban co the dung phan nay de ke cau chuyen "quan sat thay doi".',
+            title: 'Tầng Sâu Nữa',
+            body: 'Khu vực này tái hiện giai đoạn hệ sinh thái bắt đầu hồi phục ở tầng nước sâu, khi các cụm thực vật và đàn cá quay trở lại rõ nét hơn.',
             items: [
-                'Thong diep: sinh vat nhay cam bat dau xuat hien khi chat luong nuoc cai thien.',
-                'CTA de xuat: "Xem du lieu do pH va do trong nuoc".',
-                'Demo action: ket noi sang gallery hoac block thong ke.'
+                'Chất lượng nước cải thiện tạo điều kiện cho sinh vật nhạy cảm xuất hiện trở lại.',
+                'Các lớp thực vật ngập nước bắt đầu định hình lại môi trường sống bên dưới mặt hồ.',
+                'Đây là điểm chuyển tiếp quan trọng trước khi đi xuống tầng đáy.'
             ],
-            ctaLabel: 'Mo Gallery',
+            ctaLabel: 'Xem Hình Ảnh',
             ctaAction: 'open-gallery',
             ctaHref: '#'
         },
         'node-8': {
-            title: 'Node 8 - Day Ho',
-            body: 'Node nay nen dong vai tro "cam ket hanh dong". Nguoi xem da di den do sau nhat, phu hop de chot thong diep.',
+            title: 'Đáy Hồ',
+            body: 'Đây là lớp sâu nhất của hành trình, nơi toàn bộ chuyển động chậm lại và phần lõi của hệ sinh thái được cảm nhận rõ nhất.',
             items: [
-                'Thong diep: he sinh thai ben vung can cam ket dai han.',
-                'CTA de xuat: "Dang ky tinh nguyen vien" hoac "Ung ho tai nguyen".',
-                'Demo action: mo form nhanh de thu lead ngay trong trang.'
+                'Rễ cây, lớp bùn và các mảng sinh vật đáy hồ tạo nên nền tảng cho sự phục hồi lâu dài.',
+                'Không gian tối hơn để nhấn mạnh cảm giác tĩnh lặng và chiều sâu sinh thái.',
+                'Hành trình khép lại bằng thông điệp cam kết bảo tồn bền vững.'
             ],
-            ctaLabel: 'Dang ky tham gia',
+            ctaLabel: 'Tham Gia Cùng Chúng Tôi',
             ctaAction: 'go-link',
             ctaHref: 'join.html'
         }
@@ -153,7 +155,7 @@ function setupZaloChatWidget() {
 
 function waitForMediaElementLoad(el) {
     return new Promise((resolve) => {
-        const timeoutId = window.setTimeout(() => resolve(), 8000);
+        const timeoutId = window.setTimeout(() => resolve(), MEDIA_LOAD_TIMEOUT_MS);
         const done = () => {
             window.clearTimeout(timeoutId);
             resolve();
@@ -230,7 +232,7 @@ async function prepareIntroAssets() {
     const updateProgressText = (loaded, total) => {
         if (!enterBtnText) return;
         const percent = Math.round((loaded / total) * 100);
-        enterBtnText.textContent = `DANG TAI TAI NGUYEN... ${percent}%`;
+        enterBtnText.textContent = `ĐANG TẢI TÀI NGUYÊN... ${percent}%`;
     };
 
     const localImages = Array.from(document.querySelectorAll('img[src^="assets/"]'));
@@ -262,7 +264,7 @@ async function prepareIntroAssets() {
         btnEnter.disabled = false;
     }
     if (enterBtnText) {
-        enterBtnText.textContent = 'BAT DAU HANH TRINH';
+        enterBtnText.textContent = 'BẮT ĐẦU HÀNH TRÌNH';
     }
 
     if (!journeyInitialized && btnEnter) {
@@ -271,7 +273,7 @@ async function prepareIntroAssets() {
             if (!journeyInitialized) {
                 btnEnter.click();
             }
-        }, 300);
+        }, AUTO_ENTER_DELAY_MS);
     }
 }
 
