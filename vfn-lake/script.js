@@ -20,6 +20,7 @@ const copyAllCodeBtn = document.getElementById('copy-all-code-btn');
 const codeOutput = document.getElementById('code-output');
 const ZALO_PERSONAL_NUMBER = '0917656016';
 const ZALO_PERSONAL_URL = `https://zalo.me/${ZALO_PERSONAL_NUMBER}`;
+const shouldRestoreSavedLayout = new URLSearchParams(window.location.search).get('edit') === '1';
 let journeyInitialized = false;
 
 function setupNodeActionButtons() {
@@ -59,18 +60,21 @@ function setupNodeActionButtons() {
         }
     };
 
-    ctaEl.addEventListener('click', (event) => {
-        const action = ctaEl.dataset.action;
-        if (action !== 'open-gallery') return;
+    if (ctaEl.dataset.bound !== '1') {
+        ctaEl.dataset.bound = '1';
+        ctaEl.addEventListener('click', (event) => {
+            const action = ctaEl.dataset.action;
+            if (action !== 'open-gallery') return;
 
-        event.preventDefault();
-        modal.hide();
+            event.preventDefault();
+            modal.hide();
 
-        const galleryEl = document.getElementById('modalGallery');
-        if (!galleryEl) return;
-        const galleryModal = bootstrap.Modal.getOrCreateInstance(galleryEl);
-        galleryModal.show();
-    });
+            const galleryEl = document.getElementById('modalGallery');
+            if (!galleryEl) return;
+            const galleryModal = bootstrap.Modal.getOrCreateInstance(galleryEl);
+            galleryModal.show();
+        });
+    }
 
     document.querySelectorAll('.js-node-action-btn').forEach((btn) => {
         if (btn.dataset.bound === '1') return;
@@ -110,7 +114,7 @@ function waitForMediaElementLoad(el) {
             resolve();
         };
 
-        if (!el) return resolve();
+        if (!el) return done();
 
         if (el.tagName === 'IMG') {
             if (el.complete) return done();
@@ -433,7 +437,11 @@ function endAssetDrag(event) {
 document.addEventListener('pointerup', endAssetDrag);
 document.addEventListener('pointercancel', endAssetDrag);
 
-restoreEditableAssets();
+if (shouldRestoreSavedLayout) {
+    restoreEditableAssets();
+} else {
+    updateCodeOutput();
+}
 setupZaloChatWidget();
 
 // ----------------------------------------
@@ -466,9 +474,13 @@ function resetIntroState() {
 if ('scrollRestoration' in history) {
     history.scrollRestoration = 'manual';
 }
-window.addEventListener('load', resetIntroState);
-window.addEventListener('pageshow', resetIntroState);
 window.addEventListener('load', () => {
+    resetIntroState();
+    prepareIntroAssets().catch(() => {});
+}, { once: true });
+window.addEventListener('pageshow', (event) => {
+    if (!event.persisted) return;
+    resetIntroState();
     prepareIntroAssets().catch(() => {});
 });
 
@@ -640,6 +652,7 @@ function initJourney() {
     const diveAudio  = document.getElementById('dive-audio');
     const underAudio = document.getElementById('under-audio');
     const allAudio   = [lakeAudio, diveAudio, underAudio];
+    const fadeTimers = new WeakMap();
     let currentZone  = null;
 
     // Đọc flag từ btnEnter đã click trước khi initJourney chạy
@@ -649,6 +662,12 @@ function initJourney() {
     function fadeAudio(target, toVol, dur = 1200) {
         allAudio.forEach(a => {
             if (!a) return;
+            const activeTimer = fadeTimers.get(a);
+            if (activeTimer) {
+                clearInterval(activeTimer);
+                fadeTimers.delete(a);
+            }
+
             const isTarget = (a === target);
             const startVol = a.volume;
             const endVol   = isTarget ? toVol : 0;
@@ -669,10 +688,13 @@ function initJourney() {
                 a.volume = Math.min(1, Math.max(0, startVol + stepVol * step));
                 if (step >= steps) {
                     clearInterval(timer);
+                    fadeTimers.delete(a);
                     a.volume = endVol;
                     if (!isTarget && a.volume < 0.02) a.pause();
                 }
             }, stepTime);
+
+            fadeTimers.set(a, timer);
         });
     }
 
