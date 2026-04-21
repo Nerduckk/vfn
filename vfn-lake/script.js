@@ -772,7 +772,7 @@ function resetIntroState() {
             clearProps: 'opacity,visibility,filter,scale,rotation,rotationX,x,y,yPercent'
         });
         gsap.set('.horizon-group, .p-far, .p-mid, .p-near, .underwater-cutout', {
-            clearProps: 'opacity,visibility,filter,scale,rotation,rotationX,x,y,yPercent'
+            clearProps: 'visibility,scale,rotation,rotationX,x,y,yPercent'
         });
     }
 }
