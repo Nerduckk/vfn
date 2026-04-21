@@ -20,14 +20,24 @@ const copyAllCodeBtn = document.getElementById('copy-all-code-btn');
 const codeOutput = document.getElementById('code-output');
 const ZALO_PERSONAL_NUMBER = '0917656016';
 const ZALO_PERSONAL_URL = `https://zalo.me/${ZALO_PERSONAL_NUMBER}`;
+let journeyInitialized = false;
+const urlParams = new URLSearchParams(window.location.search);
+const shouldRestoreLayout = urlParams.get('edit') === '1';
+
+if (window.location.hash) {
+    history.replaceState(null, '', `${window.location.pathname}${window.location.search}`);
+}
+window.scrollTo(0, 0);
+window.addEventListener('beforeunload', () => window.scrollTo(0, 0));
 
 function setupNodeActionButtons() {
     const modalEl = document.getElementById('modalNodeAction');
     const titleEl = document.getElementById('modalNodeActionLabel');
     const bodyEl = document.getElementById('modalNodeActionBody');
     const listEl = document.getElementById('modalNodeActionList');
+    const ctaEl = document.getElementById('modalNodeActionCta');
 
-    if (!modalEl || !titleEl || !bodyEl || !listEl || typeof bootstrap === 'undefined') return;
+    if (!modalEl || !titleEl || !bodyEl || !listEl || !ctaEl || typeof bootstrap === 'undefined') return;
 
     const modal = new bootstrap.Modal(modalEl);
     const contentMap = {
@@ -38,7 +48,10 @@ function setupNodeActionButtons() {
                 'Thong diep: sinh vat nhay cam bat dau xuat hien khi chat luong nuoc cai thien.',
                 'CTA de xuat: "Xem du lieu do pH va do trong nuoc".',
                 'Demo action: ket noi sang gallery hoac block thong ke.'
-            ]
+            ],
+            ctaLabel: 'Mo Gallery',
+            ctaAction: 'open-gallery',
+            ctaHref: '#'
         },
         'node-8': {
             title: 'Node 8 - Day Ho',
@@ -47,9 +60,25 @@ function setupNodeActionButtons() {
                 'Thong diep: he sinh thai ben vung can cam ket dai han.',
                 'CTA de xuat: "Dang ky tinh nguyen vien" hoac "Ung ho tai nguyen".',
                 'Demo action: mo form nhanh de thu lead ngay trong trang.'
-            ]
+            ],
+            ctaLabel: 'Dang ky tham gia',
+            ctaAction: 'go-link',
+            ctaHref: 'join.html'
         }
     };
+
+    ctaEl.addEventListener('click', (event) => {
+        const action = ctaEl.dataset.action;
+        if (action !== 'open-gallery') return;
+
+        event.preventDefault();
+        modal.hide();
+
+        const galleryEl = document.getElementById('modalGallery');
+        if (!galleryEl) return;
+        const galleryModal = bootstrap.Modal.getOrCreateInstance(galleryEl);
+        galleryModal.show();
+    });
 
     document.querySelectorAll('.js-node-action-btn').forEach((btn) => {
         if (btn.dataset.bound === '1') return;
@@ -64,6 +93,9 @@ function setupNodeActionButtons() {
             titleEl.textContent = payload.title;
             bodyEl.textContent = payload.body;
             listEl.innerHTML = payload.items.map((item) => `<li>${item}</li>`).join('');
+            ctaEl.textContent = payload.ctaLabel;
+            ctaEl.dataset.action = payload.ctaAction;
+            ctaEl.setAttribute('href', payload.ctaHref);
             modal.show();
         });
     });
@@ -76,6 +108,57 @@ function setupZaloChatWidget() {
     toggle.addEventListener('click', () => {
         window.open(ZALO_PERSONAL_URL, '_blank', 'noopener,noreferrer');
     });
+}
+
+function waitForMediaElementLoad(el) {
+    return new Promise((resolve) => {
+        if (!el) return resolve();
+
+        if (el.tagName === 'IMG') {
+            if (el.complete && el.naturalWidth > 0) return resolve();
+            el.addEventListener('load', () => resolve(), { once: true });
+            el.addEventListener('error', () => resolve(), { once: true });
+            return;
+        }
+
+        if (el.tagName === 'AUDIO') {
+            if (el.readyState >= 2) return resolve();
+            el.addEventListener('canplaythrough', () => resolve(), { once: true });
+            el.addEventListener('loadeddata', () => resolve(), { once: true });
+            el.addEventListener('error', () => resolve(), { once: true });
+            el.load();
+            return;
+        }
+
+        resolve();
+    });
+}
+
+async function prepareIntroAssets() {
+    const enterBtnText = btnEnter?.querySelector('.btn-text');
+    if (btnEnter) {
+        btnEnter.disabled = true;
+    }
+    if (enterBtnText) {
+        enterBtnText.textContent = 'DANG TAI TAI NGUYEN...';
+    }
+
+    const localImages = Array.from(document.querySelectorAll('img[src^="assets/"]'));
+    const localAudios = ['ambient-audio', 'dive-audio', 'under-audio']
+        .map((id) => document.getElementById(id))
+        .filter(Boolean);
+
+    await Promise.all([
+        ...localImages.map(waitForMediaElementLoad),
+        ...localAudios.map(waitForMediaElementLoad)
+    ]);
+
+    if (btnEnter) {
+        btnEnter.disabled = false;
+    }
+    if (enterBtnText) {
+        enterBtnText.textContent = 'BAT DAU HANH TRINH';
+    }
 }
 
 function getEditableAssets() {
@@ -352,7 +435,11 @@ function endAssetDrag(event) {
 document.addEventListener('pointerup', endAssetDrag);
 document.addEventListener('pointercancel', endAssetDrag);
 
-restoreEditableAssets();
+if (shouldRestoreLayout) {
+    restoreEditableAssets();
+} else {
+    updateCodeOutput();
+}
 setupZaloChatWidget();
 
 // ----------------------------------------
@@ -362,7 +449,39 @@ const welcomeScreen = document.getElementById('welcome-screen');
 const btnEnter = document.getElementById('btn-enter');
 const ambientAudio = document.getElementById('ambient-audio');
 
-btnEnter.addEventListener('click', () => {
+function resetIntroState() {
+    journeyInitialized = false;
+    window._audioZoneStarted = false;
+    window.scrollTo(0, 0);
+    document.body.classList.add('no-scroll');
+    document.getElementById('main-menu-btn')?.classList.add('d-none');
+    welcomeScreen?.classList.remove('hidden');
+    [ambientAudio, document.getElementById('dive-audio'), document.getElementById('under-audio')]
+        .forEach((audio) => {
+            if (!audio) return;
+            audio.pause();
+            audio.currentTime = 0;
+            audio.volume = 0;
+        });
+
+    if (typeof gsap !== 'undefined') {
+        gsap.set('#world-canvas', { clearProps: 'transform' });
+    }
+}
+
+if ('scrollRestoration' in history) {
+    history.scrollRestoration = 'manual';
+}
+window.addEventListener('load', resetIntroState);
+window.addEventListener('pageshow', resetIntroState);
+window.addEventListener('load', () => {
+    prepareIntroAssets().catch(() => {});
+});
+
+btnEnter?.addEventListener('click', () => {
+    if (journeyInitialized) return;
+    journeyInitialized = true;
+
     // 1. Play Lake Ambient + Khởi động Audio Zone Engine
     if (ambientAudio) {
         ambientAudio.volume = 0;
@@ -416,6 +535,15 @@ document.body.classList.add('no-scroll');
 // ----------------------------------------
 
 function initJourney() {
+    if (typeof ScrollTrigger !== 'undefined') {
+        ScrollTrigger.getAll().forEach(trigger => trigger.kill());
+    }
+
+    const particleContainer = document.getElementById('particle-container');
+    if (particleContainer) {
+        particleContainer.innerHTML = '';
+    }
+
     // Generate Floating Water Spores (Sương Nước Li Ti)
     createParticles();
 
