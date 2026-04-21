@@ -26,7 +26,9 @@ let preloadRunId = 0;
 let autoEnterTimeoutId = null;
 let audioUnlockBound = false;
 let introAssetFailures = [];
-const MEDIA_LOAD_TIMEOUT_MS = 12000;
+let runtimeAssetBlobUrls = new Map();
+let runtimeAssetStyleEl = null;
+const ASSET_FETCH_TIMEOUT_MS = 30000;
 const AUTO_ENTER_DELAY_MS = 1200;
 
 function forceScrollTop() {
@@ -184,108 +186,202 @@ function setupZaloChatWidget() {
     });
 }
 
-function waitForMediaElementLoad(el) {
-    return new Promise((resolve) => {
-        let settled = false;
-        const describeTarget = () => {
-            if (!el) return { url: 'unknown', label: 'unknown asset', type: 'unknown' };
-
-            if (typeof el === 'string') {
-                return {
-                    url: el,
-                    label: el.split('/').pop() || el,
-                    type: 'image'
-                };
-            }
-
-            if (el.tagName === 'IMG') {
-                const src = el.currentSrc || el.getAttribute('src') || 'unknown-image';
-                return {
-                    url: src,
-                    label: el.getAttribute('alt') || src.split('/').pop() || src,
-                    type: 'image'
-                };
-            }
-
-            if (el.tagName === 'AUDIO') {
-                const source = el.querySelector('source');
-                const src = source?.getAttribute('src') || el.currentSrc || 'unknown-audio';
-                return {
-                    url: src,
-                    label: el.id || src.split('/').pop() || src,
-                    type: 'audio'
-                };
-            }
-
-            return { url: 'unknown', label: 'unknown asset', type: 'unknown' };
-        };
-        const meta = describeTarget();
-        const timeoutId = window.setTimeout(() => done(false, 'timeout'), MEDIA_LOAD_TIMEOUT_MS);
-        const done = (ok, reason = ok ? 'loaded' : 'error') => {
-            if (settled) return;
-            settled = true;
-            window.clearTimeout(timeoutId);
-            resolve({ ...meta, ok, reason });
-        };
-
-        if (!el) return done(false, 'missing-target');
-
-        if (typeof el === 'string') {
-            const img = new Image();
-            img.decoding = 'async';
-            img.addEventListener('load', () => done(true), { once: true });
-            img.addEventListener('error', () => done(false, 'error'), { once: true });
-            img.src = el;
-            if (img.complete) return done(img.naturalWidth > 0, img.naturalWidth > 0 ? 'loaded' : 'error');
-            return;
-        }
-
-        if (el.tagName === 'IMG') {
-            if (el.complete) return done(el.naturalWidth > 0, el.naturalWidth > 0 ? 'loaded' : 'error');
-            el.addEventListener('load', () => done(true), { once: true });
-            el.addEventListener('error', () => done(false, 'error'), { once: true });
-            return;
-        }
-
-        if (el.tagName === 'AUDIO') {
-            if (el.readyState >= 2) return done(true);
-            el.addEventListener('canplaythrough', () => done(true), { once: true });
-            el.addEventListener('loadeddata', () => done(true), { once: true });
-            el.addEventListener('error', () => done(false, 'error'), { once: true });
-            el.load();
-            return;
-        }
-
-        done(true);
-    });
+function normalizeAssetRef(ref) {
+    return (ref || '').trim().replace(/^\.?\//, '');
 }
 
-async function collectCssAssetUrls() {
+function inferAssetType(ref) {
+    const cleanRef = normalizeAssetRef(ref).toLowerCase();
+    if (/\.(mp3|wav|ogg|m4a)(\?.*)?$/.test(cleanRef)) return 'audio';
+    if (/\.(png|jpe?g|webp|gif|svg)(\?.*)?$/.test(cleanRef)) return 'image';
+    return 'binary';
+}
+
+function createTimeoutController(timeoutMs) {
+    const controller = new AbortController();
+    const timeoutId = window.setTimeout(() => controller.abort(new DOMException('Timed out', 'AbortError')), timeoutMs);
+    return {
+        controller,
+        clear() {
+            window.clearTimeout(timeoutId);
+        }
+    };
+}
+
+async function fetchTextWithTimeout(url, timeoutMs = ASSET_FETCH_TIMEOUT_MS) {
+    const pending = createTimeoutController(timeoutMs);
+    try {
+        const response = await fetch(url, {
+            cache: 'reload',
+            credentials: 'same-origin',
+            signal: pending.controller.signal
+        });
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}`);
+        }
+        return await response.text();
+    } finally {
+        pending.clear();
+    }
+}
+
+async function fetchBlobWithTimeout(url, timeoutMs = ASSET_FETCH_TIMEOUT_MS) {
+    const pending = createTimeoutController(timeoutMs);
+    try {
+        const response = await fetch(url, {
+            cache: 'reload',
+            credentials: 'same-origin',
+            signal: pending.controller.signal
+        });
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}`);
+        }
+        return await response.blob();
+    } finally {
+        pending.clear();
+    }
+}
+
+function extractCssAssetUrls(cssText) {
     const urls = new Set();
     const pattern = /url\((['"]?)(assets\/[^'")]+)\1\)/g;
-    const stylesheetLinks = Array.from(document.querySelectorAll('link[rel="stylesheet"]'))
-        .map((link) => link.getAttribute('href'))
-        .filter(Boolean);
+    let match;
+    while ((match = pattern.exec(cssText)) !== null) {
+        urls.add(normalizeAssetRef(match[2]));
+    }
+    return Array.from(urls);
+}
 
-    for (const href of stylesheetLinks) {
+async function collectLocalStylesheets() {
+    const sheets = [];
+    const links = Array.from(document.querySelectorAll('link[rel="stylesheet"]'));
+
+    for (const link of links) {
+        const href = link.getAttribute('href');
+        if (!href) continue;
+
         try {
             const url = new URL(href, window.location.href);
             if (url.origin !== window.location.origin) continue;
-            const cssText = await fetch(url.href, { cache: 'force-cache' }).then((res) => {
-                if (!res.ok) return '';
-                return res.text();
-            });
-            let match;
-            while ((match = pattern.exec(cssText)) !== null) {
-                urls.add(match[2]);
-            }
-            pattern.lastIndex = 0;
+            const text = await fetchTextWithTimeout(url.href);
+            sheets.push({ href: url.href, text });
         } catch (_) {
-            // Ignore stylesheet parse issues.
+            // Keep going; stylesheet fetch issues will surface via missing CSS assets later.
         }
     }
 
-    return Array.from(urls);
+    return sheets;
+}
+
+function getImageAssetRefs() {
+    return Array.from(document.querySelectorAll('img'))
+        .map((img) => normalizeAssetRef(img.dataset.assetRef || img.getAttribute('src')))
+        .filter((src) => src.startsWith('assets/'));
+}
+
+function getAudioAssetRefs() {
+    return Array.from(document.querySelectorAll('audio source'))
+        .map((source) => normalizeAssetRef(source.dataset.assetRef || source.getAttribute('src')))
+        .filter((src) => src.startsWith('assets/'));
+}
+
+function revokeRuntimeAssetBlobUrls() {
+    for (const blobUrl of runtimeAssetBlobUrls.values()) {
+        URL.revokeObjectURL(blobUrl);
+    }
+    runtimeAssetBlobUrls.clear();
+}
+
+async function decodeImageBlob(blob) {
+    const tempUrl = URL.createObjectURL(blob);
+    try {
+        await new Promise((resolve, reject) => {
+            const img = new Image();
+            img.decoding = 'async';
+            img.onload = () => resolve();
+            img.onerror = () => reject(new Error('decode-error'));
+            img.src = tempUrl;
+        });
+    } finally {
+        URL.revokeObjectURL(tempUrl);
+    }
+}
+
+async function preloadAssetRef(ref) {
+    const normalizedRef = normalizeAssetRef(ref);
+    const type = inferAssetType(normalizedRef);
+    const url = new URL(normalizedRef, window.location.href).href;
+
+    try {
+        const blob = await fetchBlobWithTimeout(url);
+        if (type === 'image') {
+            await decodeImageBlob(blob);
+        }
+        const blobUrl = URL.createObjectURL(blob);
+        return {
+            ok: true,
+            url: normalizedRef,
+            label: normalizedRef.split('/').pop() || normalizedRef,
+            type,
+            blobUrl
+        };
+    } catch (error) {
+        return {
+            ok: false,
+            url: normalizedRef,
+            label: normalizedRef.split('/').pop() || normalizedRef,
+            type,
+            reason: error?.name === 'AbortError' ? 'timeout' : (error?.message || 'fetch-error')
+        };
+    }
+}
+
+function applyBlobUrlsToImages(blobUrlMap) {
+    document.querySelectorAll('img').forEach((img) => {
+        const originalRef = normalizeAssetRef(img.dataset.assetRef || img.getAttribute('src'));
+        if (!originalRef.startsWith('assets/')) return;
+        const blobUrl = blobUrlMap.get(originalRef);
+        if (!blobUrl) return;
+        img.dataset.assetRef = originalRef;
+        img.loading = 'eager';
+        img.decoding = 'async';
+        img.src = blobUrl;
+    });
+}
+
+function applyBlobUrlsToAudios(blobUrlMap) {
+    document.querySelectorAll('audio').forEach((audio) => {
+        const source = audio.querySelector('source');
+        if (!source) return;
+        const originalRef = normalizeAssetRef(source.dataset.assetRef || source.getAttribute('src'));
+        if (!originalRef.startsWith('assets/')) return;
+        const blobUrl = blobUrlMap.get(originalRef);
+        if (!blobUrl) return;
+        source.dataset.assetRef = originalRef;
+        source.src = blobUrl;
+        audio.load();
+    });
+}
+
+function ensureRuntimeAssetStyleEl() {
+    if (runtimeAssetStyleEl) return runtimeAssetStyleEl;
+    runtimeAssetStyleEl = document.createElement('style');
+    runtimeAssetStyleEl.id = 'runtime-asset-style-overrides';
+    document.head.appendChild(runtimeAssetStyleEl);
+    return runtimeAssetStyleEl;
+}
+
+function applyBlobUrlsToStylesheets(stylesheets, blobUrlMap) {
+    const styleEl = ensureRuntimeAssetStyleEl();
+    const rewrittenCss = stylesheets
+        .map(({ text }) => text.replace(/url\((['"]?)(assets\/[^'")]+)\1\)/g, (full, quote, assetRef) => {
+            const blobUrl = blobUrlMap.get(normalizeAssetRef(assetRef));
+            if (!blobUrl) return full;
+            return `url("${blobUrl}")`;
+        }))
+        .join('\n');
+
+    styleEl.textContent = rewrittenCss;
 }
 
 async function prepareIntroAssets() {
@@ -304,22 +400,21 @@ async function prepareIntroAssets() {
         enterBtnText.textContent = `ĐANG KIỂM TRA TÀI NGUYÊN... ${percent}%`;
     };
 
-    const localImages = Array.from(document.querySelectorAll('img[src^="assets/"]'));
-    const cssImageUrls = await collectCssAssetUrls();
-    const localAudios = ['ambient-audio', 'dive-audio', 'under-audio']
-        .map((id) => document.getElementById(id))
-        .filter(Boolean);
-    const knownImageSrc = new Set(localImages.map((img) => img.getAttribute('src')).filter(Boolean));
-    const cssOnlyImageUrls = cssImageUrls.filter((url) => !knownImageSrc.has(url));
-    const mediaTargets = [...localImages, ...cssOnlyImageUrls, ...localAudios];
-    const totalTargets = Math.max(mediaTargets.length, 1);
+    const stylesheets = await collectLocalStylesheets();
+    const cssAssetRefs = stylesheets.flatMap(({ text }) => extractCssAssetUrls(text));
+    const manifest = Array.from(new Set([
+        ...getImageAssetRefs(),
+        ...getAudioAssetRefs(),
+        ...cssAssetRefs
+    ]));
+    const totalTargets = Math.max(manifest.length, 1);
     let loadedTargets = 0;
 
     updateProgressText(loadedTargets, totalTargets);
 
     const results = await Promise.all([
-        ...mediaTargets.map((target) =>
-            waitForMediaElementLoad(target).finally(() => {
+        ...manifest.map((assetRef) =>
+            preloadAssetRef(assetRef).finally(() => {
                 loadedTargets += 1;
                 if (currentRunId !== preloadRunId) return;
                 updateProgressText(loadedTargets, totalTargets);
@@ -342,6 +437,13 @@ async function prepareIntroAssets() {
         console.error('Missing or failed intro assets:', introAssetFailures);
         return;
     }
+
+    const nextBlobUrlMap = new Map(results.map((result) => [result.url, result.blobUrl]));
+    revokeRuntimeAssetBlobUrls();
+    runtimeAssetBlobUrls = nextBlobUrlMap;
+    applyBlobUrlsToImages(runtimeAssetBlobUrls);
+    applyBlobUrlsToAudios(runtimeAssetBlobUrls);
+    applyBlobUrlsToStylesheets(stylesheets, runtimeAssetBlobUrls);
 
     if (btnEnter) {
         btnEnter.disabled = false;
