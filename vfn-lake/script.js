@@ -29,7 +29,8 @@ const GENERIC_FALLBACK_IMAGE = 'assets/cutouts/hoa-sen-rieng.png';
 const IMG_FALLBACK_BY_SRC = {
     'assets/jellyfish-seaweed.png': 'assets/cutouts/cum-hoa-la-sen.png',
     'assets/cutouts/ca-duoi.png': 'assets/cutouts/ca-rieng-le.png',
-    'assets/cutouts/rua.png': 'assets/cutouts/dan-ca-nho.png'
+    'assets/cutouts/rua.png': 'assets/cutouts/dan-ca-nho.png',
+    'assets/cutouts/chim-rieng.png': 'assets/cutouts/chuon-chuon-rieng.png'
 };
 const BG_CLASS_FALLBACK = {
     'cutout-fish-round': 'assets/cutouts/dan-ca-lon.png',
@@ -617,10 +618,12 @@ function resetIntroState() {
 
     if (typeof gsap !== 'undefined') {
         gsap.set('#world-canvas', { clearProps: 'transform' });
-        gsap.set(
-            '.underwater-veil, .horizon-group, .waterline-glow, .surface-content, .mound-wrap, .tall-plant-cluster, .p-far, .p-mid, .p-near, .stars-container, .underwater-cutout',
-            { clearProps: 'all' }
-        );
+        gsap.set('.underwater-veil, .waterline-glow, .surface-content, .mound-wrap, .tall-plant-cluster, .stars-container', {
+            clearProps: 'opacity,visibility,filter,scale,rotation,rotationX,x,y,yPercent'
+        });
+        gsap.set('.horizon-group, .p-far, .p-mid, .p-near, .underwater-cutout', {
+            clearProps: 'opacity,visibility,filter,scale,rotation,rotationX,x,y,yPercent'
+        });
     }
 }
 
