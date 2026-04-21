@@ -833,7 +833,7 @@ body.no-scroll { overflow: hidden; }
 }
 
 .cutout-fish-round {
-    background-image: url("assets/cutouts/dan-ca-lon.png");
+    background-image: url("assets/fish-ray.png");
     background-position: left center;
 }
 
@@ -856,27 +856,27 @@ body.no-scroll { overflow: hidden; }
 }
 
 .cutout-ray {
-    background-image: url("assets/cutouts/ca-rieng-le.png");
+    background-image: url("assets/fish-ray.png");
     background-position: right center;
 }
 
 .cutout-plant-green {
-    background-image: url("assets/cutouts/la-sen-rieng.png");
+    background-image: url("assets/plants-blue-green.png");
     background-position: left center;
 }
 
 .cutout-plant-blue {
-    background-image: url("assets/cutouts/la-sen-rieng-2.png");
+    background-image: url("assets/plants-blue-green.png");
     background-position: right center;
 }
 
 .cutout-jellyfish {
-    background-image: url("assets/cutouts/cum-hoa-la-sen.png");
+    background-image: url("assets/jellyfish-seaweed.png");
     background-position: left center;
 }
 
 .cutout-coral-dark {
-    background-image: url("assets/cutouts/cum-hoa-sen-la-sen.png");
+    background-image: url("assets/jellyfish-seaweed.png");
     background-position: right center;
 }
 

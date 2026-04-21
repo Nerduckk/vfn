@@ -25,21 +25,11 @@ let journeyInitialized = false;
 let preloadRunId = 0;
 let autoEnterTimeoutId = null;
 
-const GENERIC_FALLBACK_IMAGE = 'assets/cutouts/hoa-sen-rieng.png';
-const IMG_FALLBACK_BY_SRC = {
-    'assets/jellyfish-seaweed.png': 'assets/cutouts/cum-hoa-la-sen.png',
-    'assets/cutouts/ca-duoi.png': 'assets/cutouts/ca-rieng-le.png',
-    'assets/cutouts/rua.png': 'assets/cutouts/dan-ca-nho.png',
-    'assets/cutouts/chim-rieng.png': 'assets/cutouts/chuon-chuon-rieng.png'
-};
-const BG_CLASS_FALLBACK = {
-    'cutout-fish-round': 'assets/cutouts/dan-ca-lon.png',
-    'cutout-ray': 'assets/cutouts/ca-rieng-le.png',
-    'cutout-plant-green': 'assets/cutouts/la-sen-rieng.png',
-    'cutout-plant-blue': 'assets/cutouts/la-sen-rieng-2.png',
-    'cutout-jellyfish': 'assets/cutouts/cum-hoa-la-sen.png',
-    'cutout-coral-dark': 'assets/cutouts/cum-hoa-sen-la-sen.png'
-};
+function forceScrollTop() {
+    window.scrollTo(0, 0);
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+}
 
 function setupNodeActionButtons() {
     const modalEl = document.getElementById('modalNodeAction');
@@ -164,68 +154,6 @@ function waitForMediaElementLoad(el) {
     });
 }
 
-function probeImageUrl(url, timeoutMs = 4500) {
-    return new Promise((resolve) => {
-        const img = new Image();
-        const timeoutId = window.setTimeout(() => resolve(false), timeoutMs);
-        const finish = (ok) => {
-            window.clearTimeout(timeoutId);
-            resolve(ok);
-        };
-        img.addEventListener('load', () => finish(true), { once: true });
-        img.addEventListener('error', () => finish(false), { once: true });
-        img.src = url;
-    });
-}
-
-async function enforceCriticalAssetFallbacks() {
-    const imgNodes = Array.from(document.querySelectorAll('img[src^="assets/"]'));
-    imgNodes.forEach((img) => {
-        if (img.dataset.fallbackBound === '1') return;
-        img.dataset.fallbackBound = '1';
-        img.addEventListener('error', () => {
-            const current = img.getAttribute('src') || '';
-            const mapped = IMG_FALLBACK_BY_SRC[current] || GENERIC_FALLBACK_IMAGE;
-            if (current === mapped) return;
-            img.setAttribute('src', mapped);
-        });
-    });
-
-    const uniqueImgUrls = Array.from(new Set([
-        ...Object.keys(IMG_FALLBACK_BY_SRC),
-        ...imgNodes.map((img) => img.getAttribute('src') || '').filter(Boolean)
-    ]));
-
-    await Promise.all(uniqueImgUrls.map(async (url) => {
-        const ok = await probeImageUrl(url);
-        if (ok) return;
-        imgNodes
-            .filter((img) => img.getAttribute('src') === url)
-            .forEach((img) => img.setAttribute('src', IMG_FALLBACK_BY_SRC[url] || GENERIC_FALLBACK_IMAGE));
-    }));
-
-    const classNames = Object.keys(BG_CLASS_FALLBACK);
-    await Promise.all(classNames.map(async (className) => {
-        const targets = Array.from(document.querySelectorAll(`.${className}`));
-        if (!targets.length) return;
-
-        const computedBg = window.getComputedStyle(targets[0]).backgroundImage || '';
-        const match = computedBg.match(/url\(["']?(.*?)["']?\)/i);
-        const currentUrl = match?.[1] || '';
-        if (!currentUrl || currentUrl.startsWith('data:')) return;
-
-        const ok = await probeImageUrl(currentUrl);
-        if (ok) return;
-
-        const fallbackUrl = BG_CLASS_FALLBACK[className];
-        targets.forEach((el) => {
-            el.style.backgroundImage = `url("${fallbackUrl}")`;
-            el.style.backgroundSize = '100% 100%';
-            el.style.backgroundPosition = 'center';
-        });
-    }));
-}
-
 async function collectCssAssetUrls() {
     const urls = new Set();
     const pattern = /url\((['"]?)(assets\/[^'")]+)\1\)/g;
@@ -257,8 +185,6 @@ async function collectCssAssetUrls() {
 async function prepareIntroAssets() {
     const currentRunId = ++preloadRunId;
     const enterBtnText = btnEnter?.querySelector('.btn-text');
-
-    await enforceCriticalAssetFallbacks();
 
     if (btnEnter) {
         btnEnter.disabled = true;
@@ -604,7 +530,7 @@ function resetIntroState() {
     journeyInitialized = false;
     window._audioZoneStarted = false;
     window.clearTimeout(autoEnterTimeoutId);
-    window.scrollTo(0, 0);
+    forceScrollTop();
     document.body.classList.add('no-scroll');
     document.getElementById('main-menu-btn')?.classList.add('d-none');
     welcomeScreen?.classList.remove('hidden');
@@ -635,7 +561,6 @@ window.addEventListener('load', () => {
     prepareIntroAssets().catch(() => {});
 }, { once: true });
 window.addEventListener('pageshow', (event) => {
-    if (!event.persisted) return;
     resetIntroState();
     prepareIntroAssets().catch(() => {});
 });
@@ -658,6 +583,7 @@ btnEnter?.addEventListener('click', () => {
         onComplete: () => {
             welcomeScreen.classList.add('hidden');
             document.body.classList.remove('no-scroll');
+            forceScrollTop();
             initJourney();
         }
     });
