@@ -22,6 +22,8 @@ const ZALO_PERSONAL_NUMBER = '0917656016';
 const ZALO_PERSONAL_URL = `https://zalo.me/${ZALO_PERSONAL_NUMBER}`;
 const shouldRestoreSavedLayout = new URLSearchParams(window.location.search).get('edit') === '1';
 let journeyInitialized = false;
+let preloadRunId = 0;
+let autoEnterTimeoutId = null;
 
 function setupNodeActionButtons() {
     const modalEl = document.getElementById('modalNodeAction');
@@ -116,6 +118,16 @@ function waitForMediaElementLoad(el) {
 
         if (!el) return done();
 
+        if (typeof el === 'string') {
+            const img = new Image();
+            img.decoding = 'async';
+            img.addEventListener('load', done, { once: true });
+            img.addEventListener('error', done, { once: true });
+            img.src = el;
+            if (img.complete) return done();
+            return;
+        }
+
         if (el.tagName === 'IMG') {
             if (el.complete) return done();
             el.addEventListener('load', done, { once: true });
@@ -136,30 +148,86 @@ function waitForMediaElementLoad(el) {
     });
 }
 
+async function collectCssAssetUrls() {
+    const urls = new Set();
+    const pattern = /url\((['"]?)(assets\/[^'")]+)\1\)/g;
+    const stylesheetLinks = Array.from(document.querySelectorAll('link[rel="stylesheet"]'))
+        .map((link) => link.getAttribute('href'))
+        .filter(Boolean);
+
+    for (const href of stylesheetLinks) {
+        try {
+            const url = new URL(href, window.location.href);
+            if (url.origin !== window.location.origin) continue;
+            const cssText = await fetch(url.href, { cache: 'force-cache' }).then((res) => {
+                if (!res.ok) return '';
+                return res.text();
+            });
+            let match;
+            while ((match = pattern.exec(cssText)) !== null) {
+                urls.add(match[2]);
+            }
+            pattern.lastIndex = 0;
+        } catch (_) {
+            // Ignore stylesheet parse issues.
+        }
+    }
+
+    return Array.from(urls);
+}
+
 async function prepareIntroAssets() {
+    const currentRunId = ++preloadRunId;
     const enterBtnText = btnEnter?.querySelector('.btn-text');
     if (btnEnter) {
         btnEnter.disabled = true;
     }
-    if (enterBtnText) {
-        enterBtnText.textContent = 'DANG TAI TAI NGUYEN...';
-    }
+
+    const updateProgressText = (loaded, total) => {
+        if (!enterBtnText) return;
+        const percent = Math.round((loaded / total) * 100);
+        enterBtnText.textContent = `DANG TAI TAI NGUYEN... ${percent}%`;
+    };
 
     const localImages = Array.from(document.querySelectorAll('img[src^="assets/"]'));
+    const cssImageUrls = await collectCssAssetUrls();
     const localAudios = ['ambient-audio', 'dive-audio', 'under-audio']
         .map((id) => document.getElementById(id))
         .filter(Boolean);
+    const knownImageSrc = new Set(localImages.map((img) => img.getAttribute('src')).filter(Boolean));
+    const cssOnlyImageUrls = cssImageUrls.filter((url) => !knownImageSrc.has(url));
+    const mediaTargets = [...localImages, ...cssOnlyImageUrls, ...localAudios];
+    const totalTargets = Math.max(mediaTargets.length, 1);
+    let loadedTargets = 0;
+
+    updateProgressText(loadedTargets, totalTargets);
 
     await Promise.all([
-        ...localImages.map(waitForMediaElementLoad),
-        ...localAudios.map(waitForMediaElementLoad)
+        ...mediaTargets.map((target) =>
+            waitForMediaElementLoad(target).finally(() => {
+                loadedTargets += 1;
+                if (currentRunId !== preloadRunId) return;
+                updateProgressText(loadedTargets, totalTargets);
+            })
+        )
     ]);
+
+    if (currentRunId !== preloadRunId) return;
 
     if (btnEnter) {
         btnEnter.disabled = false;
     }
     if (enterBtnText) {
         enterBtnText.textContent = 'BAT DAU HANH TRINH';
+    }
+
+    if (!journeyInitialized && btnEnter) {
+        window.clearTimeout(autoEnterTimeoutId);
+        autoEnterTimeoutId = window.setTimeout(() => {
+            if (!journeyInitialized) {
+                btnEnter.click();
+            }
+        }, 300);
     }
 }
 
@@ -454,6 +522,7 @@ const ambientAudio = document.getElementById('ambient-audio');
 function resetIntroState() {
     journeyInitialized = false;
     window._audioZoneStarted = false;
+    window.clearTimeout(autoEnterTimeoutId);
     window.scrollTo(0, 0);
     document.body.classList.add('no-scroll');
     document.getElementById('main-menu-btn')?.classList.add('d-none');
