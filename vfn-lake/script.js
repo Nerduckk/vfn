@@ -24,11 +24,43 @@ const shouldRestoreSavedLayout = new URLSearchParams(window.location.search).get
 let journeyInitialized = false;
 let preloadRunId = 0;
 let autoEnterTimeoutId = null;
+let audioUnlockBound = false;
 
 function forceScrollTop() {
     window.scrollTo(0, 0);
     document.documentElement.scrollTop = 0;
     document.body.scrollTop = 0;
+}
+
+function tryStartAmbientAudio() {
+    if (!ambientAudio) return;
+    ambientAudio.volume = 0;
+    ambientAudio.play()
+        .then(() => {
+            if (typeof gsap !== 'undefined') {
+                gsap.to(ambientAudio, { volume: 0.5, duration: 3, overwrite: 'auto' });
+            } else {
+                ambientAudio.volume = 0.5;
+            }
+            window._audioZoneStarted = true;
+        })
+        .catch(() => {
+            window._audioZoneStarted = false;
+        });
+}
+
+function bindAudioUnlock() {
+    if (audioUnlockBound) return;
+    audioUnlockBound = true;
+
+    const unlock = () => {
+        if (!journeyInitialized || window._audioZoneStarted) return;
+        tryStartAmbientAudio();
+    };
+
+    ['pointerdown', 'touchstart', 'wheel', 'keydown'].forEach((eventName) => {
+        window.addEventListener(eventName, unlock, { passive: true });
+    });
 }
 
 function setupNodeActionButtons() {
@@ -569,14 +601,9 @@ btnEnter?.addEventListener('click', () => {
     if (journeyInitialized) return;
     journeyInitialized = true;
 
-    // 1. Play Lake Ambient + Khởi động Audio Zone Engine
-    if (ambientAudio) {
-        ambientAudio.volume = 0;
-        ambientAudio.play().catch(() => {});
-        gsap.to(ambientAudio, { volume: 0.5, duration: 3 });
-    }
-    // Đánh dấu audio đã started để AudioZone chạy được
-    window._audioZoneStarted = true;
+    // 1. Try to start ambient audio. If autoplay is blocked, first user interaction will unlock it.
+    tryStartAmbientAudio();
+    bindAudioUnlock();
 
     // 2. Cinematic Zoom Transition
     const tl = gsap.timeline({
