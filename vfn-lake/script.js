@@ -25,6 +25,7 @@ let journeyInitialized = false;
 let preloadRunId = 0;
 let autoEnterTimeoutId = null;
 let audioUnlockBound = false;
+let introAssetFailures = [];
 const MEDIA_LOAD_TIMEOUT_MS = 12000;
 const AUTO_ENTER_DELAY_MS = 1200;
 
@@ -71,57 +72,13 @@ window._resumeVfnAudio = () => {
 };
 
 function setupNodeActionButtons() {
-    const modalEl = document.getElementById('modalNodeAction');
-    const titleEl = document.getElementById('modalNodeActionLabel');
-    const bodyEl = document.getElementById('modalNodeActionBody');
-    const listEl = document.getElementById('modalNodeActionList');
-    const ctaEl = document.getElementById('modalNodeActionCta');
+    if (typeof bootstrap === 'undefined') return;
 
-    if (!modalEl || !titleEl || !bodyEl || !listEl || !ctaEl || typeof bootstrap === 'undefined') return;
-
-    const modal = new bootstrap.Modal(modalEl);
-    const contentMap = {
-        'node-7': {
-            title: 'Tầng Sâu Nữa',
-            body: 'Khu vực này tái hiện giai đoạn hệ sinh thái bắt đầu hồi phục ở tầng nước sâu, khi các cụm thực vật và đàn cá quay trở lại rõ nét hơn.',
-            items: [
-                'Chất lượng nước cải thiện tạo điều kiện cho sinh vật nhạy cảm xuất hiện trở lại.',
-                'Các lớp thực vật ngập nước bắt đầu định hình lại môi trường sống bên dưới mặt hồ.',
-                'Đây là điểm chuyển tiếp quan trọng trước khi đi xuống tầng đáy.'
-            ],
-            ctaLabel: 'Xem Hình Ảnh',
-            ctaAction: 'open-gallery',
-            ctaHref: '#'
-        },
-        'node-8': {
-            title: 'Đáy Hồ',
-            body: 'Đây là lớp sâu nhất của hành trình, nơi toàn bộ chuyển động chậm lại và phần lõi của hệ sinh thái được cảm nhận rõ nhất.',
-            items: [
-                'Rễ cây, lớp bùn và các mảng sinh vật đáy hồ tạo nên nền tảng cho sự phục hồi lâu dài.',
-                'Không gian tối hơn để nhấn mạnh cảm giác tĩnh lặng và chiều sâu sinh thái.',
-                'Hành trình khép lại bằng thông điệp cam kết bảo tồn bền vững.'
-            ],
-            ctaLabel: 'Tham Gia Cùng Chúng Tôi',
-            ctaAction: 'go-link',
-            ctaHref: 'join.html'
-        }
-    };
-
-    if (ctaEl.dataset.bound !== '1') {
-        ctaEl.dataset.bound = '1';
-        ctaEl.addEventListener('click', (event) => {
-            const action = ctaEl.dataset.action;
-            if (action !== 'open-gallery') return;
-
-            event.preventDefault();
-            modal.hide();
-
-            const galleryEl = document.getElementById('modalGallery');
-            if (!galleryEl) return;
-            const galleryModal = bootstrap.Modal.getOrCreateInstance(galleryEl);
-            galleryModal.show();
-        });
-    }
+    const nodeModalEl = document.getElementById('modalNodeAction');
+    const nodeModalTitle = document.getElementById('modalNodeActionLabel');
+    const nodeModalBody = document.getElementById('modalNodeActionBody');
+    const nodeModalCta = document.getElementById('modalNodeActionCta');
+    const nodeModal = nodeModalEl ? bootstrap.Modal.getOrCreateInstance(nodeModalEl) : null;
 
     document.querySelectorAll('.js-node-action-btn').forEach((btn) => {
         if (btn.dataset.bound === '1') return;
@@ -130,16 +87,90 @@ function setupNodeActionButtons() {
         btn.addEventListener('click', (event) => {
             event.preventDefault();
             const action = btn.dataset.nodeAction;
-            const payload = contentMap[action];
-            if (!payload) return;
 
-            titleEl.textContent = payload.title;
-            bodyEl.textContent = payload.body;
-            listEl.innerHTML = payload.items.map((item) => `<li>${item}</li>`).join('');
-            ctaEl.textContent = payload.ctaLabel;
-            ctaEl.dataset.action = payload.ctaAction;
-            ctaEl.setAttribute('href', payload.ctaHref);
-            modal.show();
+            if (action === 'node-7') {
+                if (!nodeModal || !nodeModalTitle || !nodeModalBody || !nodeModalCta) return;
+
+                const rect = btn.getBoundingClientRect();
+                const pressX = `${((event.clientX || rect.left + rect.width / 2) - rect.left).toFixed(1)}px`;
+                const pressY = `${((event.clientY || rect.top + rect.height / 2) - rect.top).toFixed(1)}px`;
+                btn.style.setProperty('--press-x', pressX);
+                btn.style.setProperty('--press-y', pressY);
+                btn.classList.remove('is-pressed-wow');
+                void btn.offsetWidth;
+                btn.classList.add('is-pressed-wow');
+
+                nodeModalTitle.textContent = 'Tầng Sâu Nữa';
+                nodeModalBody.innerHTML = `
+                    <section class="node-insight-hero">
+                        <div class="node-insight-hero-copy">
+                            <div class="node-insight-kicker">Tầng sâu 02 • Tín hiệu hồi sinh</div>
+                            <div class="node-insight-headline">Mặt hồ không chỉ<br>còn tồn tại.<br>Nó bắt đầu sống lại.</div>
+                            <p class="node-insight-copy">Ở độ sâu này, sự sống quay về không phải như một đốm sáng nhỏ, mà như một cấu trúc mới đang lặng lẽ dựng lên dưới nước: đàn cá có nhịp, tầng cây có lớp, và mặt hồ bắt đầu giữ được hơi thở của chính nó.</p>
+                        </div>
+                        <div class="node-insight-hero-panel">
+                            <div class="node-insight-panel-label">Spotlight</div>
+                            <div class="node-insight-panel-value">72%</div>
+                            <p>Không gian thị giác giờ được lấp đầy bởi chuyển động có tổ chức, thay vì những tín hiệu sống rời rạc.</p>
+                        </div>
+                    </section>
+                    <section class="node-insight-pulse">
+                        <div class="node-insight-pulse-ring"></div>
+                        <div class="node-insight-pulse-core"></div>
+                        <div class="node-insight-pulse-text">
+                            <div class="node-insight-label">Tâm điểm</div>
+                            <strong>Hồ đã qua ngưỡng chịu đựng.</strong>
+                            <span>Nó đang bước vào pha tự hồi phục.</span>
+                        </div>
+                    </section>
+                    <section class="node-insight-grid">
+                        <article class="node-insight-card">
+                            <div class="node-insight-label">Dấu hiệu 01</div>
+                            <div class="node-insight-metric">Đàn</div>
+                            <p>Cá không còn bơi như những chiếc bóng đơn độc. Chúng trở lại theo cụm, tạo thành cảm giác mặt hồ đã đủ an toàn để giữ một nhịp sống ổn định.</p>
+                        </article>
+                        <article class="node-insight-card">
+                            <div class="node-insight-label">Dấu hiệu 02</div>
+                            <div class="node-insight-metric">Lớp</div>
+                            <p>Thực vật ngập nước bắt đầu xếp tầng. Mỗi lớp thêm vào là một tầng trú ẩn mới, một cấu trúc sinh thái mới đang được dựng lại từ bóng tối.</p>
+                        </article>
+                        <article class="node-insight-card">
+                            <div class="node-insight-label">Dấu hiệu 03</div>
+                            <div class="node-insight-metric">Nhịp</div>
+                            <p>Nước tối hơn, chậm hơn, nhưng không tắt. Chính độ lắng này cho thấy hồ không còn chống đỡ, mà đang tự cân bằng trở lại.</p>
+                        </article>
+                    </section>
+                    <section class="node-insight-storyline">
+                        <div class="node-insight-story-step">
+                            <span>01</span>
+                            <p>Từ những chuyển động rời rạc, sự sống bắt đầu kết nối thành cụm.</p>
+                        </div>
+                        <div class="node-insight-story-step">
+                            <span>02</span>
+                            <p>Từ vài mảng xanh nhỏ, tầng thực vật bắt đầu tạo nơi trú ẩn thật sự.</p>
+                        </div>
+                        <div class="node-insight-story-step">
+                            <span>03</span>
+                            <p>Từ một mặt hồ chỉ còn chịu đựng, nhịp tự hồi phục đã quay lại.</p>
+                        </div>
+                    </section>
+                    <div class="node-insight-voice">
+                        <p>"Đây là khoảnh khắc mặt hồ thôi chống chọi với tổn thương, và bắt đầu hồi sinh bằng chính nhịp thở của nó."</p>
+                    </div>
+                `;
+                nodeModalCta.classList.add('d-none');
+                window.setTimeout(() => {
+                    nodeModal.show();
+                }, 180);
+                window.setTimeout(() => {
+                    btn.classList.remove('is-pressed-wow');
+                }, 720);
+                return;
+            }
+
+            if (action === 'node-8') {
+                window.location.href = 'join.html';
+            }
         });
     });
 }
@@ -155,41 +186,77 @@ function setupZaloChatWidget() {
 
 function waitForMediaElementLoad(el) {
     return new Promise((resolve) => {
-        const timeoutId = window.setTimeout(() => resolve(), MEDIA_LOAD_TIMEOUT_MS);
-        const done = () => {
+        let settled = false;
+        const describeTarget = () => {
+            if (!el) return { url: 'unknown', label: 'unknown asset', type: 'unknown' };
+
+            if (typeof el === 'string') {
+                return {
+                    url: el,
+                    label: el.split('/').pop() || el,
+                    type: 'image'
+                };
+            }
+
+            if (el.tagName === 'IMG') {
+                const src = el.currentSrc || el.getAttribute('src') || 'unknown-image';
+                return {
+                    url: src,
+                    label: el.getAttribute('alt') || src.split('/').pop() || src,
+                    type: 'image'
+                };
+            }
+
+            if (el.tagName === 'AUDIO') {
+                const source = el.querySelector('source');
+                const src = source?.getAttribute('src') || el.currentSrc || 'unknown-audio';
+                return {
+                    url: src,
+                    label: el.id || src.split('/').pop() || src,
+                    type: 'audio'
+                };
+            }
+
+            return { url: 'unknown', label: 'unknown asset', type: 'unknown' };
+        };
+        const meta = describeTarget();
+        const timeoutId = window.setTimeout(() => done(false, 'timeout'), MEDIA_LOAD_TIMEOUT_MS);
+        const done = (ok, reason = ok ? 'loaded' : 'error') => {
+            if (settled) return;
+            settled = true;
             window.clearTimeout(timeoutId);
-            resolve();
+            resolve({ ...meta, ok, reason });
         };
 
-        if (!el) return done();
+        if (!el) return done(false, 'missing-target');
 
         if (typeof el === 'string') {
             const img = new Image();
             img.decoding = 'async';
-            img.addEventListener('load', done, { once: true });
-            img.addEventListener('error', done, { once: true });
+            img.addEventListener('load', () => done(true), { once: true });
+            img.addEventListener('error', () => done(false, 'error'), { once: true });
             img.src = el;
-            if (img.complete) return done();
+            if (img.complete) return done(img.naturalWidth > 0, img.naturalWidth > 0 ? 'loaded' : 'error');
             return;
         }
 
         if (el.tagName === 'IMG') {
-            if (el.complete) return done();
-            el.addEventListener('load', done, { once: true });
-            el.addEventListener('error', done, { once: true });
+            if (el.complete) return done(el.naturalWidth > 0, el.naturalWidth > 0 ? 'loaded' : 'error');
+            el.addEventListener('load', () => done(true), { once: true });
+            el.addEventListener('error', () => done(false, 'error'), { once: true });
             return;
         }
 
         if (el.tagName === 'AUDIO') {
-            if (el.readyState >= 2) return done();
-            el.addEventListener('canplaythrough', done, { once: true });
-            el.addEventListener('loadeddata', done, { once: true });
-            el.addEventListener('error', done, { once: true });
+            if (el.readyState >= 2) return done(true);
+            el.addEventListener('canplaythrough', () => done(true), { once: true });
+            el.addEventListener('loadeddata', () => done(true), { once: true });
+            el.addEventListener('error', () => done(false, 'error'), { once: true });
             el.load();
             return;
         }
 
-        done();
+        done(true);
     });
 }
 
@@ -224,15 +291,17 @@ async function collectCssAssetUrls() {
 async function prepareIntroAssets() {
     const currentRunId = ++preloadRunId;
     const enterBtnText = btnEnter?.querySelector('.btn-text');
+    introAssetFailures = [];
 
     if (btnEnter) {
         btnEnter.disabled = true;
+        btnEnter.removeAttribute('title');
     }
 
     const updateProgressText = (loaded, total) => {
         if (!enterBtnText) return;
         const percent = Math.round((loaded / total) * 100);
-        enterBtnText.textContent = `ĐANG TẢI TÀI NGUYÊN... ${percent}%`;
+        enterBtnText.textContent = `ĐANG KIỂM TRA TÀI NGUYÊN... ${percent}%`;
     };
 
     const localImages = Array.from(document.querySelectorAll('img[src^="assets/"]'));
@@ -248,7 +317,7 @@ async function prepareIntroAssets() {
 
     updateProgressText(loadedTargets, totalTargets);
 
-    await Promise.all([
+    const results = await Promise.all([
         ...mediaTargets.map((target) =>
             waitForMediaElementLoad(target).finally(() => {
                 loadedTargets += 1;
@@ -259,6 +328,20 @@ async function prepareIntroAssets() {
     ]);
 
     if (currentRunId !== preloadRunId) return;
+
+    introAssetFailures = results.filter((result) => !result.ok);
+
+    if (introAssetFailures.length > 0) {
+        if (btnEnter) {
+            btnEnter.disabled = false;
+            btnEnter.title = introAssetFailures.map((item) => `${item.type}: ${item.url}`).slice(0, 8).join('\n');
+        }
+        if (enterBtnText) {
+            enterBtnText.textContent = `THIẾU ${introAssetFailures.length} ASSET • BẤM ĐỂ KIỂM TRA LẠI`;
+        }
+        console.error('Missing or failed intro assets:', introAssetFailures);
+        return;
+    }
 
     if (btnEnter) {
         btnEnter.disabled = false;
@@ -606,6 +689,10 @@ window.addEventListener('pageshow', (event) => {
 
 btnEnter?.addEventListener('click', () => {
     if (journeyInitialized) return;
+    if (introAssetFailures.length > 0) {
+        prepareIntroAssets().catch(() => {});
+        return;
+    }
     journeyInitialized = true;
 
     // 1. Try to start ambient audio. If autoplay is blocked, first user interaction will unlock it.

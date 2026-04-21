@@ -442,7 +442,7 @@
                 <!-- NÚT 7: TẦNG SÂU NỮA (Khôi phục lại từ Node 7 cũ) -->
                 <div class="canvas-node" style="top: 480vh; left: 355vw; width: 35vw;">
                     <a href="#"
-                        class="btn btn-outline-light rounded-pill mb-4 px-4 py-2 js-node-action-btn"
+                        class="btn btn-outline-light rounded-pill mb-4 px-4 py-2 js-node-action-btn node-action-wow"
                         data-node-action="node-7">02. KHÁM PHÁ</a>
                     <h2 class="display-huge serif-font text-gold text-shadow">TẦNG SÂU NỮA</h2>
                     <p class="lead-vip sans-font opacity-75 mt-4">Khung cảnh ngập trong màu hồ tối dần. Cá và rễ cây
@@ -652,16 +652,15 @@
     </div>
 
     <div class="modal fade" id="modalNodeAction" tabindex="-1" aria-labelledby="modalNodeActionLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content bg-dark border-gold">
+        <div class="modal-dialog modal-dialog-centered modal-xl">
+            <div class="modal-content bg-dark border-gold node-insight-modal">
                 <div class="modal-header border-bottom border-gold-low">
                     <h5 class="modal-title serif-font text-gold" id="modalNodeActionLabel">Node Info</h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
                         aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <p id="modalNodeActionBody" class="mb-3 text-light opacity-75"></p>
-                    <ul id="modalNodeActionList" class="mb-0 text-light opacity-75"></ul>
+                    <div id="modalNodeActionBody" class="text-light node-insight-body"></div>
                     <div class="d-grid mt-4">
                         <a id="modalNodeActionCta" href="join.html" class="btn btn-outline-gold rounded-pill">Thực hiện hành động</a>
                     </div>
