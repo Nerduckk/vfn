@@ -63,6 +63,11 @@ function bindAudioUnlock() {
     });
 }
 
+window._resumeVfnAudio = () => {
+    bindAudioUnlock();
+    tryStartAmbientAudio();
+};
+
 function setupNodeActionButtons() {
     const modalEl = document.getElementById('modalNodeAction');
     const titleEl = document.getElementById('modalNodeActionLabel');

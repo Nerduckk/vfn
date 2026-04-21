@@ -450,16 +450,25 @@
                 </div>
 
                 <!-- (Đối xứng Node 7 - Đẩy sang Trái) -->
-                <div class="underwater-cutout underwater-shadow cutout-coral-dark"
-                    style="top: 492vh; left: 380vw; width: 18vw; height: 34vh; transform: rotate(10deg); transform-origin: bottom right; opacity: 0.72;"
-                    aria-label="Cụm tảo tối dưới nước"></div>
-                <div class="underwater-cutout underwater-shadow cutout-plant-blue"
-                    style="top: 484vh; left: 294vw; width: 24vw; height: 42vh; transform: rotate(-26deg); transform-origin: bottom left; opacity: 0.5;"
-                    aria-label="Cụm thực vật xanh ở góc trái"></div>
+                <div class="wireframe-box asset-frame underwater-cutout underwater-shadow"
+                    style="top: 492vh; left: 380vw; width: 18vw; height: 34vh; transform: rotate(10deg); transform-origin: bottom right; opacity: 0.72; overflow: hidden;"
+                    aria-label="Cụm tảo tối dưới nước">
+                    <img src="assets/jellyfish-seaweed.png" class="surface-asset"
+                        style="object-fit: cover; object-position: right center;" alt="Cụm tảo tối dưới nước">
+                </div>
+                <div class="wireframe-box asset-frame underwater-cutout underwater-shadow"
+                    style="top: 484vh; left: 294vw; width: 24vw; height: 42vh; transform: rotate(-26deg); transform-origin: bottom left; opacity: 0.5; overflow: hidden;"
+                    aria-label="Cụm thực vật xanh ở góc trái">
+                    <img src="assets/plants-blue-green.png" class="surface-asset"
+                        style="object-fit: cover; object-position: right center;" alt="Cụm thực vật xanh ở góc trái">
+                </div>
 
-                <div class="underwater-cutout underwater-glow fish-anim cutout-school-large"
-                    style="top: 518vh; left: 312vw; width: 20vw; height: 14vh; transform: rotate(-8deg); opacity: 0.22; filter: blur(0.6px) saturate(0.75);"
-                    aria-label="Đàn cá bơi chậm trong bóng tối"></div>
+                <div class="wireframe-box asset-frame underwater-cutout underwater-glow fish-anim"
+                    style="top: 518vh; left: 312vw; width: 20vw; height: 14vh; transform: rotate(-8deg); opacity: 0.22; filter: blur(0.6px) saturate(0.75); overflow: hidden;"
+                    aria-label="Đàn cá bơi chậm trong bóng tối">
+                    <img src="assets/cutouts/dan-ca-lon.png" class="surface-asset"
+                        style="object-fit: cover; object-position: center;" alt="Đàn cá bơi chậm trong bóng tối">
+                </div>
                 <div class="wireframe-box asset-frame fish-anim"
                     style="position:absolute; top: 460vh; left: 310vw; width: 28vw; height: auto; z-index: 4; opacity: 0.82; animation-delay: 0.6s;">
                     <img src="assets/cutouts/rua.png" class="surface-asset"
@@ -479,15 +488,24 @@
                 </div>
 
                 <!-- (Đối xứng Node 8 - Hai bên rễ cây) -->
-                <div class="underwater-cutout underwater-shadow cutout-coral-dark"
-                    style="top: 560vh; left: 286vw; width: 38vw; height: 62vh; transform: rotate(18deg); transform-origin: bottom left; opacity: 0.64;"
-                    aria-label="Cụm thực vật đáy hồ bên trái"></div>
-                <div class="underwater-cutout cutout-jellyfish"
-                    style="top: 548vh; left: 372vw; width: 18vw; height: 34vh; opacity: 0.78;"
-                    aria-label="Sứa phát sáng dưới đáy hồ"></div>
-                <div class="underwater-cutout cutout-school-small"
-                    style="top: 624vh; left: 365vw; width: 24vw; height: 18vh; opacity: 0.28; filter: blur(0.9px) saturate(0.72); transform: rotate(-20deg);"
-                    aria-label="Bóng sinh vật ngủ vùi"></div>
+                <div class="wireframe-box asset-frame underwater-cutout underwater-shadow"
+                    style="top: 560vh; left: 286vw; width: 38vw; height: 62vh; transform: rotate(18deg); transform-origin: bottom left; opacity: 0.64; overflow: hidden;"
+                    aria-label="Cụm thực vật đáy hồ bên trái">
+                    <img src="assets/jellyfish-seaweed.png" class="surface-asset"
+                        style="object-fit: cover; object-position: right center;" alt="Cụm thực vật đáy hồ bên trái">
+                </div>
+                <div class="wireframe-box asset-frame underwater-cutout"
+                    style="top: 548vh; left: 372vw; width: 18vw; height: 34vh; opacity: 0.78; overflow: hidden;"
+                    aria-label="Sứa phát sáng dưới đáy hồ">
+                    <img src="assets/jellyfish-seaweed.png" class="surface-asset"
+                        style="object-fit: cover; object-position: left center;" alt="Sứa phát sáng dưới đáy hồ">
+                </div>
+                <div class="wireframe-box asset-frame underwater-cutout"
+                    style="top: 624vh; left: 365vw; width: 24vw; height: 18vh; opacity: 0.28; filter: blur(0.9px) saturate(0.72); transform: rotate(-20deg); overflow: hidden;"
+                    aria-label="Bóng sinh vật ngủ vùi">
+                    <img src="assets/cutouts/dan-ca-nho.png" class="surface-asset"
+                        style="object-fit: cover; object-position: center;" alt="Bóng sinh vật ngủ vùi">
+                </div>
 
 
                 <!-- NÚT 9: Chân Trang (Yên Tĩnh Trên Đáy Hồ) -->
@@ -687,6 +705,9 @@
                 const el = document.getElementById(id);
                 if (el) el.muted = isMuted;
             });
+            if (!isMuted && typeof window._resumeVfnAudio === 'function') {
+                window._resumeVfnAudio();
+            }
             soundBtn.querySelector('.sound-icon').innerText = isMuted ? "🔇" : "🔊";
             soundBtn.querySelector('.sound-text').innerText = isMuted ? "SOUND OFF" : "SOUND ON";
             soundBtn.style.borderColor = isMuted ? "rgba(255,255,255,0.2)" : "#ffd700";
