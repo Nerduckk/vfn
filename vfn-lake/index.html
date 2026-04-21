@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Voice For Nature giới thiệu hành trình phục hồi hệ sinh thái hồ sen qua trải nghiệm kể chuyện tương tác 2D.">
+    <meta name="theme-color" content="#021a1f">
+    <title>Voice For Nature | Hành trình hồ sen</title>
+    <link rel="icon" type="image/svg+xml"
+        href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23021a1f'/%3E%3Cpath d='M32 13c4 9 13 14 13 22 0 7-6 13-13 13s-13-6-13-13c0-8 9-13 13-22Z' fill='%23f7e4be'/%3E%3Cpath d='M32 24c2 5 7 8 7 13a7 7 0 1 1-14 0c0-5 5-8 7-13Z' fill='%236cae86'/%3E%3C/svg%3E">
+    <link rel="preconnect" href="https://cdn.jsdelivr.net">
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body class="bg-dark text-light no-scroll">
+
+    <!-- HIỆU ỨNG ĐOM ĐÓM TOÀN TRANG (GLOBAL FIREFLIES) -->
+    <div id="global-fireflies">
+        <div class="firefly" style="top: 10%; left: 15%; --dur: 5s; --del: 0s;"></div>
+        <div class="firefly" style="top: 25%; left: 45%; --dur: 7s; --del: 1.2s;"></div>
+        <div class="firefly" style="top: 40%; left: 75%; --dur: 6s; --del: 0.5s;"></div>
+        <div class="firefly" style="top: 60%; left: 20%; --dur: 8s; --del: 2.5s;"></div>
+        <div class="firefly" style="top: 80%; left: 60%; --dur: 5.5s; --del: 1.8s;"></div>
+        <div class="firefly" style="top: 15%; left: 85%; --dur: 6.5s; --del: 3s;"></div>
+        <div class="firefly" style="top: 35%; left: 10%; --dur: 7.5s; --del: 0.8s;"></div>
+        <div class="firefly" style="top: 55%; left: 80%; --dur: 6.2s; --del: 2.1s;"></div>
+        <div class="firefly" style="top: 75%; left: 35%; --dur: 5.8s; --del: 1.5s;"></div>
+        <div class="firefly" style="top: 90%; left: 15%; --dur: 8.5s; --del: 0.2s;"></div>
+        <div class="firefly" style="top: 5%; left: 55%; --dur: 6.8s; --del: 2.8s;"></div>
+        <div class="firefly" style="top: 45%; left: 30%; --dur: 7.2s; --del: 1.1s;"></div>
+        <div class="firefly" style="top: 70%; left: 85%; --dur: 5.2s; --del: 3.5s;"></div>
+        <div class="firefly" style="top: 85%; left: 5%; --dur: 7.8s; --del: 0.5s;"></div>
+        <div class="firefly" style="top: 20%; left: 25%; --dur: 6.7s; --del: 1.9s;"></div>
+        <div class="firefly" style="top: 65%; left: 50%; --dur: 5.9s; --del: 0.7s;"></div>
+        <div class="firefly" style="top: 30%; left: 65%; --dur: 8.1s; --del: 2.4s;"></div>
+        <div class="firefly" style="top: 50%; left: 5%; --dur: 6.3s; --del: 1.3s;"></div>
+        <div class="firefly" style="top: 10%; left: 70%; --dur: 7.4s; --del: 0.9s;"></div>
+        <div class="firefly" style="top: 95%; left: 95%; --dur: 5.6s; --del: 2.6s;"></div>
+    </div>
+
+    <!-- OFF CANVAS MENU (MAIN NAVIGATION) -->
+    <div class="offcanvas offcanvas-end bg-dark text-light border-start border-gold" tabindex="-1" id="offcanvasAbout"
+        aria-labelledby="offcanvasAboutLabel" style="--bs-bg-opacity: .9; backdrop-filter: blur(10px);">
+        <div class="offcanvas-header border-bottom border-gold-low">
+            <h5 class="offcanvas-title serif-font text-gold" id="offcanvasAboutLabel">VOICE FOR NATURE</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"
+                aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body d-flex flex-column justify-content-between h-100">
+            <div class="nav-links-wrap mt-4">
+                <nav class="nav flex-column gap-3 serif-font fs-3">
+                    <a class="nav-link text-gold px-0 active" href="index.html">01. TRANG CHỦ</a>
+                    <a class="nav-link text-cream opacity-50 px-0" href="about.html">02. GIỚI THIỆU</a>
+                    <a class="nav-link text-cream opacity-50 px-0" href="join.html">03. THAM GIA</a>
+                </nav>
+                <div class="divider-gold my-5" style="height: 1px; background: var(--accent-gold-low); width: 50px;">
+                </div>
+                <div class="mission-snapshot pe-3">
+                    <h6 class="text-gold text-uppercase tracking-wide mb-3 small">Sứ mệnh của chúng tôi</h6>
+                    <p class="opacity-75 small sans-font">Chúng tôi cam kết phục hồi các hệ sinh thái đất ngập nước, bắt
+                        đầu từ những hồ sen bản địa, nhằm tái lập sự cân bằng giữa con người và thiên nhiên.</p>
+                </div>
+            </div>
+            <div class="offcanvas-footer pb-4 border-top border-gold-low pt-4">
+                <a href="join.html" class="btn btn-bloom-mini w-100 py-3 rounded-pill text-uppercase tracking-wide"
+                    style="font-size: 0.8rem;">THAM GIA CÙNG CHÚNG TÔI</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- HAMBURGER MENU BUTTON (HIDDEN INITIALLY) -->
+    <button id="main-menu-btn" class="btn btn-bloom-mini position-fixed z-modal d-none" type="button"
+        data-bs-toggle="offcanvas" data-bs-target="#offcanvasAbout" aria-controls="offcanvasAbout"
+        style="top: 30px; right: 30px; width: 50px; height: 50px; border-radius: 50%; padding: 0;">
+        <span class="fs-4">☰</span>
+    </button>
+
+    <!-- SCROLL PROGRESS BAR (RIGHT) -->
+    <div class="scroll-status-wrap">
+        <div class="scroll-status-bar"></div>
+        <div class="scroll-status-text sans-font">DEPTH</div>
+    </div>
+
+    <!-- THE WELCOME OVERLAY (Cinematic Splash Screen) -->
+    <div id="welcome-screen" class="d-flex flex-column justify-content-center align-items-center z-highest">
+
+        <!-- Atmospheric Layers -->
+        <div class="mist-layer mist-1"></div>
+        <div class="mist-layer mist-2"></div>
+        <div class="glow-orb-center"></div>
+        <div class="wireframe-box wireframe-bg welcome-art welcome-art-left asset-frame slow-drift"
+            data-edit-id="welcome-left">
+            <img class="surface-asset asset-soft-far asset-tilt-left" src="assets/cutouts/cum-hoa-sen-la-sen.png"
+                alt="Cum la sen mo dau">
+        </div>
+        <div class="wireframe-box wireframe-fg welcome-art welcome-art-right asset-frame hover-float"
+            data-edit-id="welcome-right">
+            <img class="surface-asset asset-lotus-hero" src="assets/cutouts/nu-sen-rieng.png" alt="Nu sen mo dau">
+        </div>
+        <div class="wireframe-box wireframe-bg welcome-art welcome-art-bottom asset-frame slow-drift"
+            data-edit-id="welcome-bottom">
+            <img class="surface-asset asset-soft-far" src="assets/cutouts/dan-ca-lon.png" alt="Dan ca mo dau">
+        </div>
+
+        <div class="welcome-content-wrap text-center">
+            <h1 class="welcome-title serif-font shimmer-text">THE LOTUS DIVE</h1>
+            <p class="welcome-subtitle sans-font tracking-wide mt-3 text-uppercase">Khám phá tiếng vọng của thiên nhiên
+            </p>
+
+            <div class="enter-btn-wrap mt-5">
+                <button id="btn-enter" class="btn-bloom sans-font">
+                    <span class="btn-text">BẮT ĐẦU HÀNH TRÌNH</span>
+                    <div class="bloom-circle"></div>
+                </button>
+            </div>
+
+            <p class="scroll-hint mt-4 opacity-50 sans-font small">Cuộn để bắt đầu cuộc hành trình</p>
+        </div>
+
+        <audio id="ambient-audio" loop preload="auto">
+            <source src="assets/lake-ambient.mp3" type="audio/mpeg">
+        </audio>
+
+    </div>
+
+    <!-- MAIN CAMERA WRAPPER -->
+    <div class="camera-wrapper">
+        <section id="camera-window">
+
+            <!-- THE MASSIVE 2D WORLD CANVAS -->
+            <!-- 300vw X 600vh to fit the new dive depth -->
+            <div id="world-canvas" class="z-1">
+
+                <!-- NÚT 1: Bắt Đầu (Phía Trên Bên Trái) -->
+                <div class="canvas-node" style="top: 30vh; left: 10vw;">
+                    <div class="wireframe-box wireframe-fg intro-art intro-art-side asset-frame hover-float"
+                        data-edit-id="intro-side">
+                        <img class="surface-asset asset-lotus-hero" src="assets/cutouts/hoa-sen-rieng.png"
+                            alt="Nu sen foreground">
+                    </div>
+                    <h1 class="display-super serif-font title-reveal text-cream text-shadow">RE-WILD.</h1>
+                    <p class="lead-vip sans-font mt-4 text-gold opacity-75">Khởi đầu hành trình phục hồi.</p>
+                </div>
+
+                <!-- GIAI ĐOẠN 1: BỀ MẶT (Cuộn X) -->
+
+                <!-- NÚT 2: Chào Mừng -->
+                <div class="canvas-node text-center" style="top: 35vh; left: 100vw; width: 100vw;">
+                    <h1 class="display-super serif-font text-gold text-shadow" style="font-size: 7rem;">CHÀO MỪNG ĐẾN
+                        VỚI</h1>
+                    <h1 class="display-super serif-font text-cream text-shadow mt-3">CHƯƠNG TRÌNH TÁI HÒA NHẬP THIÊN
+                        NHIÊN</h1>
+                </div>
+
+                <!-- ADDED MORE FLORA TO WELCOME PAGE -->
+                <div class="wireframe-box wireframe-bg parallax-surface asset-frame slow-drift"
+                    data-edit-id="welcome-pad" style="top: 15vh; left: 110vw; width: 15vw; height: 20vh;">
+                    <img class="surface-asset asset-lotus-hero" src="assets/cutouts/hoa-sen-rieng-2.png"
+                        alt="Hoa sen o goc tren">
+                </div>
+                <div class="wireframe-box wireframe-fg parallax-surface asset-frame slow-drift"
+                    data-edit-id="welcome-bud" style="top: 65vh; left: 170vw; width: 20vw; height: 25vh;">
+                    <img class="surface-asset asset-leaf-sheen" src="assets/cutouts/cum-hoa-sen-la-sen.png"
+                        alt="Cum hoa sen o goc duoi">
+                </div>
+                <div class="wireframe-box wireframe-bg asset-frame hover-float" data-edit-id="welcome-dragonfly"
+                    style="top: 30vh; left: 185vw; width: 5vw; height: 5vh;">
+                    <img class="surface-asset asset-soft-far dragonfly-accent"
+                        src="assets/cutouts/chuon-chuon-rieng.png" alt="Chuon chuon">
+                </div>
+
+                <!-- NÚT 3: CÁC NGUYÊN TẮC CỦA CHÚNG TÔI (200vw) - PHONG PHÚ SONG SONG -->
+                <div class="canvas-node" style="top: 15vh; left: 200vw; width: 100vw; height: 100vh;">
+                    <!-- Parallax Decorative Layers (Placeholders for Art) -->
+                    <div class="wireframe-box parallax-layer layer-far asset-frame" data-edit-id="principles-far"
+                        style="top: -10vh; left: 10vw; width: 25vw; height: 40vh;">
+                        <img class="surface-asset asset-soft-far asset-tilt-left"
+                            src="assets/cutouts/la-sen-rieng-2.png" alt="Phong nen la sen">
+                    </div>
+                    <div class="wireframe-box parallax-layer layer-mid asset-frame" data-edit-id="principles-mid"
+                        style="top: 50vh; left: 70vw; width: 20vw; height: 30vh;">
+                        <img class="surface-asset asset-lotus-hero" src="assets/cutouts/chim-rieng.png"
+                            alt="Trung canh chim">
+                    </div>
+                    <div class="wireframe-box parallax-layer layer-near asset-frame" data-edit-id="principles-near"
+                        style="top: 60vh; left: -5vw; width: 35vw; height: 50vh;">
+                        <img class="surface-asset asset-near leaf-foreground-left" src="assets/cutouts/ech-rieng.png"
+                            alt="Tien canh ech">
+                    </div>
+
+                    <div class="row w-100 h-100 align-items-center px-5 position-relative z-10">
+                        <div class="col-md-5">
+                            <h2 class="serif-font display-3 text-gold">OUR<br>PRINCIPLES</h2>
+                            <p class="sans-font opacity-75 mt-3">Chúng tôi tin rằng việc hòa nhập thiên nhiên là cách
+                                duy nhất để chữa lành thế giới.</p>
+                        </div>
+                        <div class="col-md-7">
+                            <div class="row g-4">
+                                <div class="col-12">
+                                    <div class="card bg-transparent border-gold-low principle-card-new">
+                                        <div class="card-body p-4">
+                                            <div class="d-flex align-items-center gap-4">
+                                                <h1 class="display-4 serif-font text-gold-low mb-0">01</h1>
+                                                <div>
+                                                    <h4 class="card-title serif-font text-gold mb-1">Tôn Trọng Hệ Sinh
+                                                        Thái</h4>
+                                                    <p class="card-text small opacity-50">Lấy thiên nhiên làm gốc cho
+                                                        mọi hoạt động phục hồi.</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="card bg-transparent border-gold-low principle-card-new">
+                                        <div class="card-body p-4">
+                                            <div class="d-flex align-items-center gap-4">
+                                                <h1 class="display-4 serif-font text-gold-low mb-0">02</h1>
+                                                <div>
+                                                    <h4 class="card-title serif-font text-gold mb-1">Kết Nối Cộng Đồng
+                                                    </h4>
+                                                    <p class="card-text small opacity-50">Thiên nhiên chỉ tồn tại khi
+                                                        con người được thấu cảm.</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- NÚT 4: CÁCH HOẠT ĐỘNG (300vw) - THIẾT KẾ TỐI GIẢN -->
+                <div class="canvas-node" style="top: 15vh; left: 300vw; width: 100vw; height: 100vh;">
+                    <div class="container h-100 d-flex flex-column justify-content-center px-5">
+                        <h2 class="serif-font text-center text-gold mb-5" style="font-size: 4rem;">CÁCH CHÚNG TÔI HOẠT
+                            ĐỘNG</h2>
+                        <div class="how-works-list">
+                            <div class="work-item">
+                                <div class="work-number">01</div>
+                                <div class="work-line"></div>
+                                <div class="work-text">
+                                    <h4 class="serif-font text-cream">NGHIÊN CỨU & KHẢO SÁT</h4>
+                                    <p class="small opacity-50 m-0">Phân tích hệ vinh sinh và chất lượng nguồn nước.</p>
+                                </div>
+                            </div>
+                            <div class="work-item ms-5">
+                                <div class="work-number">02</div>
+                                <div class="work-line"></div>
+                                <div class="work-text">
+                                    <h4 class="serif-font text-cream">PHỤC HỒI HỆ THỰC VẬT</h4>
+                                    <p class="small opacity-50 m-0">Gieo mầm các giống sen và thủy sinh bản địa.</p>
+                                </div>
+                            </div>
+                            <div class="work-item ms-2">
+                                <div class="work-number">03</div>
+                                <div class="work-line"></div>
+                                <div class="work-text">
+                                    <h4 class="serif-font text-cream">TÁI HÒA NHẬP SINH VẬT</h4>
+                                    <p class="small opacity-50 m-0">Đưa các loài cá và sinh vật hồ trở về cội nguồn.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- HINT TO SCROLL DOWN -->
+                    </div>
+                </div>
+
+                <!-- NÚT 5: Bề Mặt Đầm (BẮT ĐẦU RƠI THẲNG) (Tại 300vw, 250vh) -->
+                <div class="canvas-node surface-scene-wrap"
+                    style="top: 250vh; left: 300vw; width: 100vw; height: 100vh; perspective: 1000px;">
+
+                    <!-- Starry Night Sky (Top 50%) -->
+                    <div class="stars-container" style="height: 50%;">
+                        <div class="star-layer"></div>
+                        <div class="star-layer-2"></div>
+                    </div>
+                    <div class="surface-haze"></div>
+                    <div class="underwater-veil"></div>
+                    <div class="surface-backdrop surface-stars-soft"></div>
+                    <div class="surface-backdrop surface-vignette"></div>
+                    <div class="horizon-group">
+                        <div class="waterline-glow"></div>
+
+                        <!-- Centerpiece Title (Positioned on Horizon) -->
+                        <div class="surface-content text-center position-absolute w-100">
+                            <h2 class="serif-font shimmer-text" style="font-size: 8rem; opacity: 0.9;">Why Now?</h2>
+                            <p class="sans-font text-gold tracking-wide mt-2 opacity-75">TẠI SAO LÀ BÂY GIỜ?</p>
+                        </div>
+                    </div>
+
+                    <!-- THE WATER PLANE (Bottom 50%) -->
+                    <div class="water-floor"></div>
+                    <!-- SVG WATER RIPPLES -->
+                    <div class="water-ripple-layer">
+                        <svg width="100%" height="100%" viewBox="0 0 1000 200" preserveAspectRatio="none"
+                            style="opacity:0.1; mix-blend-mode: color-dodge;">
+                            <path d="M-100,100 Q150,200 400,100 T900,100 T1200,100 Q800,20 600,100 T0,100"
+                                stroke="#b0ffcf" stroke-width="2" fill="none" class="pulse-glow" />
+                            <path d="M-50,50 Q200,-20 500,50 T1100,50" stroke="#b0ffcf" stroke-width="1.5" fill="none"
+                                class="slow-drift" />
+                        </svg>
+                    </div>
+
+                    <!-- THE LOTUS GARDEN (Original Assets with Atmospheric Effects) -->
+
+                    <!-- Ánh sáng tâm (Glow) phía sau tất cả -->
+                    <div class="ambient-center-glow p-far"></div>
+
+                    <!-- Sương mù mặt nước dạt nhẹ -->
+                    <div class="surface-mist p-near"></div>
+
+                    <!-- Bầy đom đóm cục bộ bị xóa vì đã có mảng Global Fireflies -->
+
+                    <!-- Bụi hoa lớn bên trái (Làm hòn đảo/tiền cảnh) -->
+                    <div class="wireframe-box p-near hover-float asset-frame"
+                        style="bottom: 0vh; left: -10vw; width: 50vw; height: auto; z-index: 5;">
+                        <img src="assets/cutouts/cum-hoa-la-sen.png" class="surface-asset"
+                            style="filter: brightness(0.8) saturate(1.1) drop-shadow(0 20px 20px rgba(0,0,0,0.5));"
+                            alt="Cụm sen trái">
+                    </div>
+
+                    <!-- Bụi hoa lớn bên phải (Sâu hơn, nổi bật) -->
+                    <div class="wireframe-box p-mid asset-frame"
+                        style="bottom: -5vh; right: -5vw; width: 45vw; height: auto; z-index: 4;">
+                        <img src="assets/cutouts/cum-hoa-sen-la-sen.png" class="surface-asset"
+                            style="filter: brightness(0.9) drop-shadow(0 15px 25px rgba(0,0,0,0.4));"
+                            alt="Cụm sen phải">
+                    </div>
+
+                    <!-- THÚ THIÊN NHIÊN (Rewild Ecosystem) -->
+
+                    <!-- Chim bay xa tít tắp -->
+                    <div class="wireframe-box p-far asset-frame"
+                        style="top: 20vh; left: 20vw; width: 8vw; height: auto; z-index: 1; opacity: 0.7;">
+                        <img src="assets/cutouts/chim-rieng.png" class="surface-asset"
+                            style="transform: scaleX(-1); filter: contrast(1.2) sepia(0.3);" alt="Chim">
+                    </div>
+
+                    <!-- Rừng sen đâm chồi rải rác (The Lotus Garden Expanded) -->
+                    <!-- Nụ sen nhô lên ở tiền cảnh góc trong cùng bên phải -->
+                    <div class="wireframe-box p-near asset-frame"
+                        style="bottom: -2vh; right: 2vw; width: 8vw; height: auto; z-index: 6;">
+                        <img src="assets/cutouts/nu-sen-rieng.png" class="surface-asset"
+                            style="filter: drop-shadow(0 15px 15px rgba(0,0,0,0.5)); transform: rotate(15deg);"
+                            alt="Nụ sen phải">
+                    </div>
+
+                    <!-- Đóa sen bung nở nằm sát mặt hồ bên phải -->
+                    <div class="wireframe-box p-mid asset-frame hover-float"
+                        style="bottom: 18vh; right: 28vw; width: 8vw; height: auto; z-index: 3;">
+                        <img src="assets/cutouts/hoa-sen-rieng.png" class="surface-asset"
+                            style="filter: drop-shadow(0 10px 10px rgba(0,0,0,0.3));" alt="Hoa sen phải">
+                    </div>
+
+                    <!-- Lá sen mọc cao ẩn ở góc trái sau cụm lớn -->
+                    <div class="wireframe-box p-far asset-frame"
+                        style="bottom: 25vh; left: 5vw; width: 6vw; height: auto; z-index: 1;">
+                        <img src="assets/cutouts/la-sen-rieng-2.png" class="surface-asset"
+                            style="filter: brightness(0.7) blur(1px);" alt="Lá sen chìm">
+                    </div>
+
+                    <!-- Thêm chim trên bầu trời giữ lại cho có sinh khí -->
+                    <div class="wireframe-box p-far slow-drift asset-frame"
+                        style="top: 15vh; right: 25vw; width: 4vw; height: auto; z-index: 1; opacity: 0.5;">
+                        <img src="assets/cutouts/chim-rieng.png" class="surface-asset"
+                            style="filter: contrast(1.2) sepia(0.3);" alt="Chim nhỏ">
+                    </div>
+                    <div class="wireframe-box p-mid slow-drift asset-frame"
+                        style="top: 25vh; right: 10vw; width: 6vw; height: auto; z-index: 2; opacity: 0.8; animation-delay: 3s;">
+                        <img src="assets/cutouts/chim-rieng.png" class="surface-asset"
+                            style="transform: rotate(-10deg);" alt="Chim lớn">
+                    </div>
+
+
+
+                    <!-- THE PARTING SEA DOORS (Relative to Node 5) -->
+                    <div id="door-left" class="surface-door surface-door-left z-highest"></div>
+                    <div id="door-right" class="surface-door surface-door-right z-highest"></div>
+                </div>
+
+                <!-- GIAI ĐOẠN 2: LẶN HỒ (Cuộn Y xuống) -->
+
+                <!-- NÚT 6: Tầng hồ đầu tiên -->
+                <div class="canvas-node" style="top: 380vh; left: 310vw; width: 35vw;">
+                    <button class="btn btn-outline-light rounded-pill mb-4 px-4 py-2 btn-interactive"
+                        data-bs-toggle="modal" data-bs-target="#modalGallery">01. XEM HÌNH ẢNH</button>
+                    <h2 class="display-huge serif-font text-cream text-shadow">DƯỚI MẶT NƯỚC</h2>
+                    <p class="lead-vip sans-font opacity-75 mt-4">Nước hồ chuyển màu lục nhẹ. Màn sương nước li ti thổi
+                        qua ống kính. Vài chú cá bơi lội.</p>
+                </div>
+
+                <!-- Node 6 Assets: Underwater Composition -->
+                <!-- Nền blur mờ 2 góc -->
+                <div class="wireframe-box asset-frame"
+                    style="position:absolute; top: 360vh; left: 278vw; width: 35vw; height: auto; z-index: 1; opacity: 0.15; filter: blur(8px) saturate(0.3) brightness(0.4); transform: rotate(-5deg);">
+                    <img src="assets/jellyfish và cây tảo (2).png" class="surface-asset" alt="">
+                </div>
+                <div class="wireframe-box asset-frame"
+                    style="position:absolute; top: 395vh; left: 360vw; width: 28vw; height: auto; z-index: 1; opacity: 0.12; filter: blur(10px) saturate(0.2) brightness(0.35); transform: scaleX(-1);">
+                    <img src="assets/jellyfish và cây tảo (2).png" class="surface-asset" alt="">
+                </div>
+
+                <!-- Đàn cá lớn — trên cao bên phải (lấp khoảng trống trên) -->
+                <div class="wireframe-box asset-frame fish-anim"
+                    style="position:absolute; top: 405vh; left: 345vw; width: 12vw; height: auto; z-index: 2; opacity: 0.5; filter: blur(0.8px) brightness(0.75);">
+                    <img src="assets/cutouts/dan-ca-lon.png" class="surface-asset"
+                        style="transform: scaleX(-1) rotate(-5deg);" alt="Đàn cá trên cao">
+                </div>
+
+                <!-- Đàn cá nhỏ — giữa màn, bơi nghiêng chéo -->
+                <div class="wireframe-box asset-frame fish-anim"
+                    style="position:absolute; top: 415vh; left: 305vw; width: 11vw; height: auto; z-index: 3; opacity: 0.75; animation-delay: 1s;">
+                    <img src="assets/cutouts/dan-ca-nho.png" class="surface-asset" style="transform: rotate(-8deg);"
+                        alt="Đàn cá giữa">
+                </div>
+
+                <!-- Cá đuối lướt nhẹ — ngang tầm tiêu đề, góc phải -->
+                <div class="wireframe-box asset-frame fish-anim"
+                    style="position:absolute; top: 368vh; left: 355vw; width: 24vw; height: auto; z-index: 4; opacity: 0.88; animation-delay: 0.5s;">
+                    <img src="assets/cutouts/cá đuối.png" class="surface-asset"
+                        style="transform: rotate(5deg) scaleX(-1); filter: drop-shadow(0 8px 20px rgba(0,150,180,0.3));"
+                        alt="Cá đuối">
+                </div>
+
+                <!-- Đàn cá xa mờ — dưới cùng, tạo chiều sâu -->
+                <div class="wireframe-box asset-frame fish-anim"
+                    style="position:absolute; top: 420vh; left: 300vw; width: 28vw; height: auto; z-index: 2; opacity: 0.2; filter: blur(2px) brightness(0.6); animation-delay: 2s;">
+                    <img src="assets/cutouts/dan-ca-lon.png" class="surface-asset" alt="Đàn cá xa dưới">
+                </div>
+
+                <!-- NÚT 7: TẦNG SÂU NỮA (Khôi phục lại từ Node 7 cũ) -->
+                <div class="canvas-node" style="top: 480vh; left: 355vw; width: 35vw;">
+                    <a href="#"
+                        class="btn btn-outline-light rounded-pill mb-4 px-4 py-2 js-node-action-btn"
+                        data-node-action="node-7">02. KHÁM PHÁ</a>
+                    <h2 class="display-huge serif-font text-gold text-shadow">TẦNG SÂU NỮA</h2>
+                    <p class="lead-vip sans-font opacity-75 mt-4">Khung cảnh ngập trong màu hồ tối dần. Cá và rễ cây
+                        xuất hiện nhiều hơn. Mọi thứ bắt đầu chậm lại.</p>
+                </div>
+
+                <!-- (Đối xứng Node 7 - Đẩy sang Trái) -->
+                <div class="underwater-cutout underwater-shadow cutout-coral-dark"
+                    style="top: 492vh; left: 380vw; width: 18vw; height: 34vh; transform: rotate(10deg); transform-origin: bottom right; opacity: 0.72;"
+                    aria-label="Cụm tảo tối dưới nước"></div>
+                <div class="underwater-cutout underwater-shadow cutout-plant-blue"
+                    style="top: 484vh; left: 294vw; width: 24vw; height: 42vh; transform: rotate(-26deg); transform-origin: bottom left; opacity: 0.5;"
+                    aria-label="Cụm thực vật xanh ở góc trái"></div>
+
+                <div class="underwater-cutout underwater-glow fish-anim cutout-school-large"
+                    style="top: 518vh; left: 312vw; width: 20vw; height: 14vh; transform: rotate(-8deg); opacity: 0.22; filter: blur(0.6px) saturate(0.75);"
+                    aria-label="Đàn cá bơi chậm trong bóng tối"></div>
+                <div class="wireframe-box asset-frame fish-anim"
+                    style="position:absolute; top: 460vh; left: 310vw; width: 28vw; height: auto; z-index: 4; opacity: 0.82; animation-delay: 0.6s;">
+                    <img src="assets/cutouts/rùa.png" class="surface-asset"
+                        style="transform: rotate(-3deg); filter: drop-shadow(0 10px 25px rgba(0,150,180,0.25));"
+                        alt="Rùa tầng sâu">
+                </div>
+
+
+                <!-- NÚT 8: Tầng sâu nhất thứ ba (Chính giữa) -->
+                <div class="canvas-node text-center" style="top: 580vh; left: 332.5vw; width: 35vw;">
+                    <a href="#"
+                        class="btn btn-outline-light rounded-pill mb-4 px-4 py-2 js-node-action-btn"
+                        data-node-action="node-8">03. CỘI NGUỒN</a>
+                    <h2 class="display-huge serif-font text-cream text-shadow">ĐÁY HỒ</h2>
+                    <p class="lead-vip sans-font opacity-75 mt-4">Nơi ánh sáng tắt lịm, những dải rễ cắm sâu vào bùn
+                        đen. Sự tĩnh lặng tuyệt đối.</p>
+                </div>
+
+                <!-- (Đối xứng Node 8 - Hai bên rễ cây) -->
+                <div class="underwater-cutout underwater-shadow cutout-coral-dark"
+                    style="top: 560vh; left: 286vw; width: 38vw; height: 62vh; transform: rotate(18deg); transform-origin: bottom left; opacity: 0.64;"
+                    aria-label="Cụm thực vật đáy hồ bên trái"></div>
+                <div class="underwater-cutout cutout-jellyfish"
+                    style="top: 548vh; left: 372vw; width: 18vw; height: 34vh; opacity: 0.78;"
+                    aria-label="Sứa phát sáng dưới đáy hồ"></div>
+                <div class="underwater-cutout cutout-school-small"
+                    style="top: 624vh; left: 365vw; width: 24vw; height: 18vh; opacity: 0.28; filter: blur(0.9px) saturate(0.72); transform: rotate(-20deg);"
+                    aria-label="Bóng sinh vật ngủ vùi"></div>
+
+
+                <!-- NÚT 9: Chân Trang (Yên Tĩnh Trên Đáy Hồ) -->
+                <div class="canvas-node text-center"
+                    style="top: 670vh; left: 300vw; width: 100vw; padding-bottom: 10vh;">
+                    <h2 class="display-super serif-font text-gold text-shadow opacity-50 mb-5">VOICE FOR NATURE</h2>
+
+                    <div class="d-flex justify-content-center gap-5 mt-5 sans-font text-cream opacity-75">
+                        <div class="text-start">
+                            <h4 class="text-gold mb-3">LIÊN HỆ</h4>
+                            <p>Email: demo@voicefornature.vn</p>
+                            <p>Điện thoại: 0123 456 789</p>
+                        </div>
+                        <div class="text-start">
+                            <h4 class="text-gold mb-3">ĐỊA CHỈ</h4>
+                            <p>Tòa nhà Thiên Nhiên, Quận 1</p>
+                            <p>TP. Hồ Chí Minh, Việt Nam</p>
+                        </div>
+                    </div>
+
+                    <div class="mt-5 pt-5">
+                        <div class="glass-line mx-auto mb-4"></div>
+                        <p class="sans-font text-cream opacity-50">&copy; 2026 VOICE FOR NATURE. Bảo lưu mọi quyền.</p>
+                    </div>
+                </div>
+
+            </div> <!-- World Canvas End -->
+        </section> <!-- Camera Window End -->
+    </div> <!-- Camera Wrapper End -->
+
+    <!-- Global Background Wrapper -->
+    <div class="bg-gradient-fixed glow-bg"></div>
+
+    <!-- Particles Container for Deep Water Spores/Bubbles -->
+    <div id="particle-container" class="position-fixed w-100 h-100"
+        style="top: 0; left: 0; pointer-events: none; z-index: 5;"></div>
+
+    <!-- ZALO PLUGIN (FLOATING BUTTON) -->
+    <button type="button" class="zalo-plugin" id="zalo-chat-toggle" aria-controls="zalo-chat-panel"
+        aria-expanded="false">
+        <div class="zalo-icon-wrapper">
+            <svg viewBox="0 0 24 24" fill="white" width="24px" height="24px">
+                <path
+                    d="M20.25 10.74c0-4.04-3.8-7.3-8.48-7.3-4.66 0-8.47 3.26-8.47 7.3 0 2.22 1.15 4.2 2.96 5.51.13.09.2.24.16.4l-.45 2.1c-.07.35.29.61.6.46l2.42-1.16c.14-.07.3-.08.45-.04 1.34.42 2.8.63 4.33.63 4.68 0 8.48-3.26 8.48-7.3zm-7.6 1.48h-1.63v-2.82c0-.52-.39-.93-.89-.93-.49 0-.89.41-.89.93v3.7c0 .17.06.33.18.45.12.12.28.18.45.18h2.79c.35 0 .63-.29.63-.65s-.28-.65-.63-.65l-.01-.01zm2.34-.14c-.11-.07-.22-.12-.34-.14l-.01-.01c-.13-.01-.27-.01-.4-.01-.15.01-.29.02-.44.05h-.01c-.14.04-.27.09-.4.16l-.01.01c-.11.08-.22.16-.31.26v-1.13c0-.52-.39-.94-.89-.94-.49 0-.89.42-.89.94v2.53c0 .52.39.94.89.94.13 0 .26 0 .38-.01.14-.02.27-.05.4-.1.12-.04.24-.09.35-.16.11-.07.2-.15.29-.24v.28c0 .17.06.33.18.45.12.12.28.18.45.18h.7c.35 0 .63-.29.63-.65 0-.36-.28-.65-.63-.65h-.07v-1.42c.04-.15.08-.29.13-.44zM16.5 10.74c.49 0 .89-.41.89-.93 0-.52-.4-.93-.89-.93s-.89.41-.89.93c0 .52.4.93.89.93zm-8.86 1.48h-1.63v-2.82c0-.52-.39-.93-.89-.93s-.89.41-.89.93v3.7c0 .17.06.33.18.45.12.12.28.18.45.18h2.79c.35 0 .63-.29.63-.65s-.28-.65-.63-.65l-.01-.01z" />
+            </svg>
+        </div>
+        <span class="zalo-tooltip">Tư vấn Zalo</span>
+    </button>
+    <div id="zalo-chat-panel" class="zalo-chat-panel" hidden>
+        <button type="button" class="zalo-chat-close" id="zalo-chat-close" aria-label="Đóng khung chat">×</button>
+        <h6 class="mb-2">Tư vấn trực tiếp qua Zalo OA</h6>
+        <div id="zalo-widget-host" class="zalo-widget-host">
+            <p class="zalo-widget-placeholder mb-0">Đang khởi tạo Zalo Chat...</p>
+        </div>
+        <p class="zalo-widget-note mb-0">Nếu khung không hiển thị, kiểm tra lại `OA ID` trong `script.js`.</p>
+    </div>
+
+    <!-- EDIT MODE BUTTON (HIDDEN FOR DEMO) -->
+    <button id="edit-mode-btn" class="btn btn-warning position-fixed d-none"
+        style="bottom: 20px; right: 20px; z-index: 9999; padding: 10px 15px; border-radius: 5px;">
+        ✏️ Chế độ căn chỉnh
+    </button>
+
+    <!-- EDIT PANEL - SHOW COORDINATES -->
+    <div id="edit-panel" class="position-fixed bg-dark text-light"
+        style="bottom: 0; right: 0; width: 390px; max-height: 78vh; overflow: auto; display: none; z-index: 9998; border: 2px solid #ffc107; border-radius: 10px 10px 0 0; padding: 15px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+            <h5 style="margin: 0; font-size: 16px;">📍 Tọa độ ảnh</h5>
+            <button id="clear-coords-btn" class="btn btn-sm btn-outline-danger" style="padding: 2px 8px;">Xóa</button>
+        </div>
+        <div class="mb-3">
+            <label for="edit-image-src" class="form-label small text-warning mb-1">Đổi ảnh</label>
+            <input id="edit-image-src" class="form-control form-control-sm" type="text"
+                placeholder="assets/cutouts/hoa-sen-rieng.png">
+            <button id="apply-image-btn" class="btn btn-sm btn-outline-warning mt-2 w-100">Áp dụng ảnh</button>
+        </div>
+        <div class="d-grid gap-2 mb-3">
+            <button id="save-layout-btn" class="btn btn-success btn-sm">Save layout</button>
+            <button id="copy-all-code-btn" class="btn btn-outline-info btn-sm">Copy code assets</button>
+        </div>
+        <div id="coordinates-output" class="small font-monospace"
+            style="max-height: 420px; overflow: auto; line-height: 1.6;"></div>
+        <textarea id="code-output" class="form-control form-control-sm mt-3" rows="10" readonly
+            placeholder="Code sẽ hiện ở đây sau khi save"></textarea>
+    </div>
+
+    <!-- GALLERY MODAL -->
+    <div class="modal fade" id="modalGallery" tabindex="-1" aria-labelledby="modalGalleryLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content bg-dark border-gold">
+                <div class="modal-header border-bottom border-gold-low">
+                    <h5 class="modal-title serif-font text-gold" id="modalGalleryLabel">GALLERY: TIẾNG VỌNG THIÊN NHIÊN
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="galleryIndicators" class="carousel slide" data-bs-ride="carousel">
+                        <div class="carousel-inner rounded shadow-lg overflow-hidden">
+                            <div class="carousel-item active">
+                                <img src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?q=80&w=1000&auto=format&fit=crop"
+                                    class="d-block w-100" style="height: 450px; object-fit: cover;"
+                                    alt="Cảnh đầm sen ban mai">
+                                <div class="carousel-caption d-none d-md-block bg-dark bg-opacity-50 rounded">
+                                    <h5 class="serif-font text-gold">Bình minh trên đầm</h5>
+                                    <p class="small">Vẻ đẹp nguyên sơ của hệ sinh thái đất ngập nước.</p>
+                                </div>
+                            </div>
+                            <div class="carousel-item">
+                                <img src="assets/lotus-gallery-2.png" class="d-block w-100"
+                                    style="height: 450px; object-fit: cover;" alt="Hoa sen nở rộ">
+                                <div class="carousel-caption d-none d-md-block bg-dark bg-opacity-50 rounded">
+                                    <h5 class="serif-font text-gold">Sen Hồng Bách Diệp</h5>
+                                    <p class="small">Loài sen quý đang được phục hồi tại dự án.</p>
+                                </div>
+                            </div>
+                            <div class="carousel-item">
+                                <img src="https://images.unsplash.com/photo-1433086466347-19414d60fc35?q=80&w=1000&auto=format&fit=crop"
+                                    class="d-block w-100" style="height: 450px; object-fit: cover;"
+                                    alt="Sinh thái dưới nước">
+                                <div class="carousel-caption d-none d-md-block bg-dark bg-opacity-50 rounded">
+                                    <h5 class="serif-font text-gold">Nhịp sống dưới mặt nước</h5>
+                                    <p class="small">Sự đa dạng sinh học là chìa khóa của bền vững.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="carousel-control-prev" type="button" data-bs-target="#galleryIndicators"
+                            data-bs-slide="prev">
+                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Previous</span>
+                        </button>
+                        <button class="carousel-control-next" type="button" data-bs-target="#galleryIndicators"
+                            data-bs-slide="next">
+                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Next</span>
+                        </button>
+                    </div>
+                    <div class="mt-4 text-center sans-font text-cream opacity-50 small">
+                        <p>Duyệt qua các khoảnh khắc phục hồi hệ sinh thái tại hồ sen.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modalNodeAction" tabindex="-1" aria-labelledby="modalNodeActionLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content bg-dark border-gold">
+                <div class="modal-header border-bottom border-gold-low">
+                    <h5 class="modal-title serif-font text-gold" id="modalNodeActionLabel">Node Info</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p id="modalNodeActionBody" class="mb-3 text-light opacity-75"></p>
+                    <ul id="modalNodeActionList" class="mb-0 text-light opacity-75"></ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ÂM THANH MÔI TRƯỜNG (AMBIENT SOUND) -->
+    <!-- Track 2: Dive (chuyển tiếp lặn xuống Node Why Now?) -->
+    <audio id="dive-audio" loop preload="auto">
+        <source src="assets/dive.mp3" type="audio/mpeg">
+    </audio>
+    <!-- Track 3: Underwater (các node dưới mặt nước) -->
+    <audio id="under-audio" loop preload="auto">
+        <source src="assets/under-water.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- NÚT BẬT/TẮT ÂM THANH TOÀN CỤC -->
+    <button id="sound-toggle" class="btn btn-outline-light rounded-pill"
+        style="position: fixed; bottom: 30px; right: 30px; z-index: 10000; display: flex; align-items: center; gap: 8px; backdrop-filter: blur(5px); background: rgba(0,0,0,0.3); border-color: rgba(255,255,255,0.2) !important;">
+        <span class="sound-icon" style="font-size: 14px;">🔊</span>
+        <span class="sound-text" style="font-size: 12px; letter-spacing: 1px;">SOUND ON</span>
+    </button>
+
+    <!-- GSAP Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="script.js"></script>
+
+    <!-- SOUND TOGGLE (Mute/Unmute toàn bộ hệ thống) -->
+    <script>
+        const soundBtn = document.getElementById('sound-toggle');
+        let isMuted = false;
+        const allTracks = ['ambient-audio', 'dive-audio', 'under-audio'];
+
+        soundBtn?.addEventListener('click', () => {
+            isMuted = !isMuted;
+            allTracks.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.muted = isMuted;
+            });
+            soundBtn.querySelector('.sound-icon').innerText = isMuted ? "🔇" : "🔊";
+            soundBtn.querySelector('.sound-text').innerText = isMuted ? "SOUND OFF" : "SOUND ON";
+            soundBtn.style.borderColor = isMuted ? "rgba(255,255,255,0.2)" : "#ffd700";
+            soundBtn.style.color = isMuted ? "white" : "#ffd700";
+        });
+    </script>
+</body>
+
+</html>

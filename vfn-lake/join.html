@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Đăng ký tham gia Voice For Nature để đồng hành phục hồi hệ sinh thái hồ sen với vai trò chuyên gia hoặc tình nguyện viên.">
+    <meta name="theme-color" content="#021a1f">
+    <title>Voice For Nature | Tham gia</title>
+    <link rel="icon" type="image/svg+xml"
+        href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23021a1f'/%3E%3Cpath d='M32 13c4 9 13 14 13 22 0 7-6 13-13 13s-13-6-13-13c0-8 9-13 13-22Z' fill='%23f7e4be'/%3E%3Cpath d='M32 24c2 5 7 8 7 13a7 7 0 1 1-14 0c0-5 5-8 7-13Z' fill='%236cae86'/%3E%3C/svg%3E">
+    <link rel="preconnect" href="https://cdn.jsdelivr.net">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-dark-lake text-light px-0">
+
+    <!-- NAVBAR -->
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-glass sticky-top">
+        <div class="container px-4">
+            <a class="navbar-brand serif-font text-gold fs-4" href="index.html">VOICE FOR NATURE</a>
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto gap-lg-4 sans-font small text-uppercase tracking-wide">
+                    <li class="nav-item"><a class="nav-link" href="index.html">Trang chủ</a></li>
+                    <li class="nav-item"><a class="nav-link" href="about.html">Giới thiệu</a></li>
+                    <li class="nav-item"><a class="nav-link active text-gold" href="join.html">Tham gia</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- FORM SECTION -->
+    <section class="section-padding py-5 min-vh-100 d-flex align-items-center">
+        <div class="container px-4">
+            <div class="row g-5 align-items-center justify-content-center">
+                <div class="col-lg-5 mb-5 mb-lg-0 text-center text-lg-start">
+                    <h6 class="text-gold text-uppercase tracking-wide mb-3 sans-font">Liên hệ</h6>
+                    <h1 class="display-4 serif-font text-cream mb-4">Ghi danh để Phục hồi <span class="italic text-gold">Thiên nhiên</span></h1>
+                    <p class="lead sans-font opacity-75 mb-5">Chúng tôi đang tìm kiếm những tâm hồn đồng điệu, những chuyên gia và tình nguyện viên đam mê bảo tồn hệ sinh thái thực vật bản địa.</p>
+                    
+                    <div class="d-flex flex-column gap-4 text-start">
+                    <div class="rounded-4 overflow-hidden border border-gold shadow-lg mb-4" style="height: 350px;">
+                        <img src="https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?q=80&w=1000&auto=format&fit=crop" class="w-100 h-100" style="object-fit: cover;" alt="Hoạt động cộng đồng">
+                    </div>
+                        <div class="ps-2">
+                            <h6 class="text-gold small text-uppercase tracking-wider mb-3">Văn phòng đại diện</h6>
+                            <p class="small opacity-75 sans-font mb-1">📍 Công viên Văn hóa Đầm Sen, Quận 11</p>
+                            <p class="small opacity-75 sans-font">✉️ demo@voicefornature.vn</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-6 col-xl-5 offset-lg-1">
+                    <div class="card bg-transparent border-gold p-4 p-md-5 rounded-4 principle-card-new shadow-lg shadow-gold-low">
+                        <h3 class="serif-font text-gold mb-4 text-center">ĐĂNG KÝ THAM GIA</h3>
+                        <form class="needs-validation sans-font" novalidate>
+                            <div class="row g-4">
+                                <div class="col-12">
+                                    <div class="form-floating mb-3">
+                                        <input type="text" class="form-control form-control-dark" id="fullName" placeholder="Họ và tên" required>
+                                        <label for="fullName">Họ và tên</label>
+                                        <div class="invalid-feedback text-gold-low small">Vui lòng nhập họ và tên của bạn.</div>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="form-floating mb-3">
+                                        <input type="email" class="form-control form-control-dark" id="emailAddr" placeholder="name@example.com" required>
+                                        <label for="emailAddr">Email</label>
+                                        <div class="invalid-feedback text-gold-low small">Vui lòng nhập email hợp lệ.</div>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="input-group mb-3">
+                                        <span class="input-group-text bg-transparent border-gold-low text-gold small px-3">VN (+84)</span>
+                                        <input type="tel" class="form-control form-control-dark" placeholder="Số điện thoại" aria-label="Phone number">
+                                    </div>
+                                </div>
+                                <div class="col-12 text-start">
+                                    <h6 class="text-gold small text-uppercase tracking-wider mb-2 ms-2">Lĩnh vực chuyên môn</h6>
+                                    <select class="form-select form-control-dark mb-4" required>
+                                        <option selected disabled value="">Chọn lĩnh vực...</option>
+                                        <option value="1">Môi trường / Sinh học</option>
+                                        <option value="2">Thiết kế cảnh quan</option>
+                                        <option value="3">Tình nguyện viên cộng đồng</option>
+                                        <option value="4">Tư vấn truyền thông</option>
+                                    </select>
+                                </div>
+                                <div class="col-12">
+                                    <div class="form-floating mb-4">
+                                        <textarea class="form-control form-control-dark" placeholder="Lời nhắn" id="messageBox" style="height: 120px"></textarea>
+                                        <label for="messageBox">Lý do bạn muốn tham gia?</label>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div id="join-success-alert" class="alert alert-success bg-success bg-opacity-10 border border-success-subtle text-light d-none rounded-4 mb-0" role="status">
+                                        Đăng ký của bạn đã được ghi nhận. Voice For Nature sẽ liên hệ với bạn sớm.
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <button class="btn btn-outline-gold w-100 py-3 rounded-pill text-uppercase font-weight-bold tracking-widest mt-2" type="submit">GỬI ĐĂNG KÝ HÀNH TRÌNH</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="footer-standard">
+        <div class="container px-4">
+            <div class="row">
+                <div class="col-md-6 mb-5 mb-md-0">
+                    <h5 class="serif-font text-gold mb-4">VOICE FOR NATURE</h5>
+                    <p class="small opacity-50 sans-font w-75">Chúng tôi luôn chào đón mọi sự đóng góp để cùng nhau hồi sinh nhịp thở của tự nhiên.</p>
+                </div>
+                <div class="col-md-3 mb-4 mb-md-0">
+                    <h6 class="text-gold small text-uppercase tracking-wide mb-3">Liên kết</h6>
+                    <ul class="list-unstyled small opacity-75 sans-font">
+                        <li class="mb-2"><a href="index.html" class="text-light text-decoration-none hover-gold">Trang chủ</a></li>
+                        <li class="mb-2"><a href="about.html" class="text-light text-decoration-none hover-gold">Giới thiệu</a></li>
+                        <li class="mb-2"><a href="join.html" class="text-light text-decoration-none hover-gold">Tham gia</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3">
+                    <h6 class="text-gold small text-uppercase tracking-wide mb-3">Thông tin</h6>
+                    <p class="small opacity-50 sans-font mb-2">Quận 1, TP. Hồ Chí Minh</p>
+                    <p class="small opacity-50 sans-font">0123 456 789</p>
+                </div>
+            </div>
+            <hr class="border-gold-low my-5">
+            <div class="text-center small opacity-50 sans-font pb-4">
+                &copy; 2026 VOICE FOR NATURE. Bảo lưu mọi quyền.
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Bootstrap Form Validation Logic
+        (() => {
+            'use strict'
+            const forms = document.querySelectorAll('.needs-validation')
+            const successAlert = document.getElementById('join-success-alert')
+            Array.from(forms).forEach(form => {
+                form.addEventListener('submit', event => {
+                    event.preventDefault()
+
+                    if (!form.checkValidity()) {
+                        event.preventDefault()
+                        event.stopPropagation()
+                        successAlert?.classList.add('d-none')
+                    } else {
+                        form.classList.add('was-validated')
+                        successAlert?.classList.remove('d-none')
+                        form.reset()
+                        form.classList.remove('was-validated')
+                        window.scrollTo({ top: 0, behavior: 'smooth' })
+                        return
+                    }
+
+                    form.classList.add('was-validated')
+                }, false)
+            })
+        })()
+    </script>
+</body>
+</html>
